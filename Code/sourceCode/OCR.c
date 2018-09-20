@@ -1,5 +1,7 @@
 #include <stdio.h>
+#include "colorRemoval.c"
 
-int main (){
-    return 0;
+int main(){
+
+
 }
