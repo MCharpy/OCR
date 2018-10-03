@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "colorRemoval.c"
+#include "colorRemoval.h"
 
 int main(){
 
