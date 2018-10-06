@@ -2,11 +2,11 @@
 
 all: OCR
 
-OCR: OCR.o colorRemoval.o
->   gcc -Wall -Wextra -std=c99 OCR.o colorRemoval.o -o OCR.elf
+OCR: OCR.o Matrix.o
+>   gcc -Wall -Wextra -std=c99 OCR.o Matrix.o -o OCR.elf
 
-OCR.o: ./sourceCode/OCR.c ./sourceCode/colorRemoval.h
+OCR.o: ./sourceCode/OCR.c ./sourceCode/Matrix.h
 >    gcc -c ./sourceCode/OCR.c
 
-colorRemoval.o: ./sourceCode/colorRemoval.c
->    gcc -c ./sourceCode/colorRemoval.c
+Matrix.o: ./sourceCode/Matrix.c
+>    gcc -c ./sourceCode/Matrix.c
