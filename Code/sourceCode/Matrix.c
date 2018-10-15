@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <math.h>
+#include <stdlib.h>
 
 typedef struct Matrix16 Matrix16;
 struct Matrix16 {
@@ -73,3 +74,40 @@ void sigmoidify16(Matrix16 *matrix)
     for (int i = 0; i< matrix->x*matrix->y; i++)
         matrix->values[i] = 1/(1 + exp(-matrix->values[i]));
 }
+
+
+
+void _SaveMatrix16(Matrix16 matrix, char p[])
+{
+	FILE *fp;
+	fp = fopen(p,"w");
+	fprintf(fp,"%i%s%i%s",matrix.x,"\n",matrix.y,"\n");
+	for(int i = 0 ; i < matrix.x*matrix.y;i++)
+		fprintf(fp,"%f%s",matrix.values[i],"\n");
+	fclose(fp);
+}
+
+void _Load(char p[],Matrix16 *dest)
+{
+	float tab[16];
+	char a[15];
+	FILE *fp;
+	fp = fopen(p,"r");
+	fgets(a,5,fp);
+	int c = strtol(a,NULL,10);
+	fgets(a,5,fp);
+	int d = strtol(a,NULL,10);
+	char s[10] = "";
+    float rtab[16];
+	for(int i = 0; i < c*d;i++)
+	{
+		fgets(a,15,fp);
+		rtab[i] = atof(a);
+	}
+	fclose(fp);	
+    dest->x = c;
+    dest->y = d;
+    for (int i = 0 ; i< c*d; i++)
+        dest->values[i] = rtab[i];
+}
+
