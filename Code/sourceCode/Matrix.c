@@ -87,7 +87,7 @@ void _SaveMatrix16(Matrix16 matrix, char p[])
 	fclose(fp);
 }
 
-void _Load(char p[],Matrix16 *dest)
+void _LoadMatrix16(char p[],Matrix16 *dest)
 {
 	float tab[16];
 	char a[15];
