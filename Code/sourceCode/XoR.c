@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include "Matrix.h"
+#include <time.h>
+#include <stdlib.h>
+
 
 Matrix16 firstWeights;
 Matrix16 firstBias;
@@ -36,5 +39,37 @@ int eval(int a, int b , int training){
     sigmoidify16(&lastLayer);
 
     return lastLayer.values[0]>lastLayer.values[1];
+}
+
+void train(int n)
+{
+    printf("1");
+    //srand(time(NULL));
+
+
+    _LoadMatrix16("firstWeights.mat",&firstWeights);
+    _LoadMatrix16("firstBias.mat:",&firstBias);
+    _LoadMatrix16("secondWeights.mat",&firstWeights);
+    _LoadMatrix16("secondBias.mat",&firstWeights);
+
+    _SaveMatrix16("patate.mat",firstWeights);
+
+    for (int i =0 ; i <n ; i++)
+    {
+         int a = rand()%2;
+         int b = rand()%2;
+
+         printf("%i %i -> %i\n",a,b,eval(a,b,1));
+    }
+
+    //backpropagate
+
+
+    _SaveMatrix16("firstWeights.mat",firstWeights);
+    _SaveMatrix16("firstBias.mat:",firstBias);
+    _SaveMatrix16("secondWeights.mat",firstWeights);
+    _SaveMatrix16("secondBias.mat",firstWeights);
+
+
 }
 

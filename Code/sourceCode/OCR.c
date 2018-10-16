@@ -5,7 +5,8 @@
 
 int main(int argc, char** argv){
 
-
+    train(50);
+/*
     Matrix16 mat;
     mat.x = 2;
     mat.y = 2;
@@ -17,20 +18,20 @@ int main(int argc, char** argv){
 
     printMatrix16(mat);
     printMatrix16(b);
-    //_SaveMatrix16(mat,"test.mat");
+    _SaveMatrix16("test.mat",mat);
     _LoadMatrix16("test.mat",&b);
 
-    printMatrix16(mat);
+*    printMatrix16(mat);
     printMatrix16(b);
 
-    /*
-     * int val1 = 0;
-     * int val2 = 0;
-     * if(argc > 1)
-     *   val1 = strtol(argv[1],NULL,10);
-     * if (argc > 2)
-     *   val2 = strtol(argv[2],NULL,10);
-     * printf("%s",eval(val1,val2,0)?"true":"false");
+    
+      int val1 = 0;
+      int val2 = 0;
+      if(argc > 1)
+        val1 = strtol(argv[1],NULL,10);
+      if (argc > 2)
+        val2 = strtol(argv[2],NULL,10);
+      printf("%s",eval(val1,val2,0)?"true":"false");
      */
     return 0;
 }
