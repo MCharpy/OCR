@@ -12,7 +12,7 @@ struct Matrix16{
 
 void printMatrix16(Matrix16 matrix);
 Matrix16 multMatrix16(Matrix16 matrix1, Matrix16 matrix2);
-int GetCoordinates16(int x, int y, Matrix16 matrix);
+int getCoordinates16(int x, int y, Matrix16 matrix);
 Matrix16 addMatrix16(Matrix16 matrix1, Matrix16 matrix2);
 void sigmoidify16(Matrix16 *matrix);
 void _SaveMatrix16(char p[], Matrix16 matrix);

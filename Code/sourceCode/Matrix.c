@@ -63,7 +63,7 @@ void printMatrix16(Matrix16 matrix){
     }
     for(int i = 0; i< matrix.x * matrix.y ; i++){
         printf("%f ",matrix.values[i]);
-        if((i-1)% matrix.y == 0)
+        if((i+1)% matrix.y == 0)
             printf("\n");
     }
     printf("\n");

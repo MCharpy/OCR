@@ -14,6 +14,7 @@ Matrix16 toEval;
 Matrix16 intermediate;
 Matrix16 lastLayer;
 
+void backPropagate(Matrix16 ErrorMatrix);
 
 int eval(int a, int b , int training){
     
@@ -57,8 +58,9 @@ void train(int n)
     Matrix16 ErrorMatrix;
     ErrorMatrix.x = 2;
     ErrorMatrix.y = 1;
-    ErrorMatrix.values[0] = 0;
-    ErrorMatrix.values[1] = 0;
+    ErrorMatrix.values[0] = 0.0;
+    ErrorMatrix.values[1] = 0.0;
+    
 
 
     for (int i =0 ; i <n ; i++)
@@ -67,21 +69,18 @@ void train(int n)
          int b = rand()%2;
 
          printf("%i %i -> %i\n",a,b,eval(a,b,1));
-         Matrix16 localError;
-         localError.x = 2;
-         localError.y = 1;
 
-         localError.values[0] =toEval.values[0] a != b;
-         localError.values[1] =a == b;
-         ErrorMatrix = addMatrix16(ErrorMatrix,localError);
-
+         ErrorMatrix.values[getCoordinates16(0,0,ErrorMatrix)] = (a != b) - lastLayer.values[0];
+         ErrorMatrix.values[getCoordinates16(1,0,ErrorMatrix)] = (a == b) - lastLayer.values[1];
+         	
+	 //printf("%f",firstWeights.values[getCoordinates16(1,0,firstWeights)]);
+         
+         backPropagate(ErrorMatrix);
+	 printMatrix16(firstWeights);
+         //printMatrix16(secondWeights);
     }
     
-    //multMatrixValue
-    ErrorMatrix.values[0] = ErrorMatrix.values[0]/(long)n;
-    ErrorMatrix.values[1] = ErrorMatrix.values[1]/(long)n;
 
-    backPropagate();
 
 
     _SaveMatrix16("firstWeights.mat",firstWeights);
@@ -96,38 +95,38 @@ void train(int n)
 
 float BackP(float Error,float ActualOut,float PreviousOut)
 {
-	float lambda = (-Error) * ActualOut * (1 - ActualOut);
+	float lambda = Error * ActualOut * (1 - ActualOut);
 	return lambda * PreviousOut * 0.5; 
 }
 
-void backPropagate( )
+void backPropagate(Matrix16 ErrorMatrix)
 {
 	float TotalError = 0;
 
-    Matrix16 ErrorMatrix;
 
 	for(int x = 0; x < 2;x++)
 	{
-		TotalError += ErrorMatrix.values[GetCoordinates16(x,0,ErrorMatrix)];
+		TotalError += ErrorMatrix.values[getCoordinates16(x,0,ErrorMatrix)];
           
 	}
 
-	for(int i = 0; i < 4;i++)
+
+	for(int i = 0; i < firstWeights.y;i++)
 	{
-		firstBias.values[GetCoordinates16(i,0,firstBias)] += BackP(TotalError , intermediate.values[GetCoordinates16(i,0,intermediate)] , toEval.values[GetCoordinates16(i,0,toEval)]);
-		for(int j = 0; j < 2; j++)
+		firstBias.values[getCoordinates16(i,0,firstBias)] += BackP(TotalError , intermediate.values[getCoordinates16(i,0,intermediate)] , toEval.values[getCoordinates16(i,0,toEval)]);
+		for(int j = 0; j < firstWeights.x; j++)
 		{
-			firstWeights.values[GetCoordinates16(i,j,firstWeights)] += BackP(TotalError , intermediate.values[GetCoordinates16(i,0,intermediate)] ,toEval.values[GetCoordinates16(i,0,toEval)]);
+			firstWeights.values[getCoordinates16(i,j,firstWeights)] += BackP(TotalError , intermediate.values[getCoordinates16(i,0,intermediate)] ,toEval.values[getCoordinates16(i,0,toEval)]);
 		}
 	}
 
 
 	for(int i = 0; i < 2;i++)
 	{
-		secondBias.values[GetCoordinates16(i,0,secondBias)] += BackP(ErrorMatrix.values[GetCoordinates16(i,0,ErrorMatrix)] , lastLayer.values[GetCoordinates16(i,0,lastLayer)] , intermediate.values[GetCoordinates16(i,0,intermediate)]); 
+		secondBias.values[getCoordinates16(i,0,secondBias)] += BackP(ErrorMatrix.values[getCoordinates16(i,0,ErrorMatrix)] , lastLayer.values[getCoordinates16(i,0,lastLayer)] , intermediate.values[getCoordinates16(i,0,intermediate)]); 
 		for(int j = 0; j < 4; j++)
 		{
-			secondWeights.values[GetCoordinates16(i,j,secondWeights)] += BackP(ErrorMatrix.values[GetCoordinates16(i,0,ErrorMatrix)] , lastLayer.values[GetCoordinates16(i,0,lastLayer)]  , intermediate.values[GetCoordinates16(i,0,intermediate)] );
+			secondWeights.values[getCoordinates16(i,j,secondWeights)] += BackP(ErrorMatrix.values[getCoordinates16(i,0,ErrorMatrix)] , lastLayer.values[getCoordinates16(i,0,lastLayer)]  , intermediate.values[getCoordinates16(i,0,intermediate)] );
 		}
 	}
 }

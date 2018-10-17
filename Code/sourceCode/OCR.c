@@ -6,7 +6,7 @@
 int main(int argc, char** argv){
 
     //printf("%i",eval(1,0,0));
-    train(100);
+    train(2);
 
    
     /*
