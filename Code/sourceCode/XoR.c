@@ -1,10 +1,15 @@
 #include <stdio.h>
 #include "Matrix.h"
+#include <time.h>
+#include <stdlib.h>
+
 
 Matrix16 firstWeights;
 Matrix16 firstBias;
 Matrix16 secondWeights;
 Matrix16 secondBias;
+
+Matrix16 toEval;
 
 Matrix16 intermediate;
 Matrix16 lastLayer;
@@ -14,27 +19,14 @@ int eval(int a, int b , int training){
     
     if(!training)
     {
-        //Load firstWeight firstBias secondWeights secondBiasi
-        firstWeights.x=4;
-        firstWeights.y=2;
-        secondWeights.x=2;
-        secondWeights.y=4;
-
-        firstBias.x=4;
-        firstBias.y=1;
-        secondBias.x=2;
-        secondBias.y=1;
-
-        for (int i = 0; i<8 ; i++)
-        {
-            firstWeights.values[i]=i/8.0;
-            secondWeights.values[i]=i/8.0;
-            firstBias.values[i]=i/8.0;
-            secondBias.values[i]=i/8.0;
-        }
+        _LoadMatrix16("firstWeights.mat",&firstWeights);
+        _LoadMatrix16("firstBias.mat",&firstBias);
+        _LoadMatrix16("secondWeights.mat",&secondWeights);
+        _LoadMatrix16("secondBias.mat",&secondBias);
     }
 
-    Matrix16 toEval;
+    printMatrix16(secondWeights);
+
     toEval.x=2;
     toEval.y=1;
     toEval.values[0]=(a==0?0:1);
@@ -47,6 +39,50 @@ int eval(int a, int b , int training){
     lastLayer = addMatrix16(lastLayer,secondBias);
     sigmoidify16(&lastLayer);
 
+   /* printf("toEval");
+    printMatrix16(toEval);
+    printf("1s weight");
+    printMatrix16(firstWeights);
+    printf("1s bias");
+    printMatrix16(firstBias);
+    printf("intermediate");
+    printMatrix16(intermediate);
+    printf("2nd weight");
+    printMatrix16(secondWeights);
+    printf("secondBias");
+    printMatrix16(secondBias);
+    printf("lastLayer");
+    printMatrix16(lastLayer);*/
+
     return lastLayer.values[0]>lastLayer.values[1];
+    
+}
+
+void train(int n)
+{
+    srand(time(NULL));
+
+    _LoadMatrix16("firstWeights.mat",&firstWeights);
+    _LoadMatrix16("firstBias.mat",&firstBias);
+    _LoadMatrix16("secondWeights.mat",&secondWeights);
+    _LoadMatrix16("secondBias.mat",&secondBias);
+
+    for (int i =0 ; i <n ; i++)
+    {
+         int a = rand()%2;
+         int b = rand()%2;
+
+         printf("%i %i -> %i\n",a,b,eval(a,b,1));
+    }
+
+    //backpropagate
+
+
+    _SaveMatrix16("firstWeights.mat",firstWeights);
+    _SaveMatrix16("firstBias.mat:",firstBias);
+    _SaveMatrix16("secondWeights.mat",secondWeights);
+    _SaveMatrix16("secondBias.mat",secondBias);
+
+
 }
 
