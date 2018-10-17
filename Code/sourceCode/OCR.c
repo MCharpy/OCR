@@ -5,8 +5,9 @@
 
 int main(int argc, char** argv){
 
-    train(50);
-/*
+    //printf("%i",eval(1,0,0));
+    train(10);
+    /*
     Matrix16 mat;
     mat.x = 2;
     mat.y = 2;
