@@ -348,12 +348,11 @@ SDL_Surface *Segment_line(SDL_Surface* RLSA_surface, SDL_Surface* surface)
 				DrawRect(tab[0], tab[1], tab[3] + 1,tab[3] + 1,surface);
 				DrawRect(tab[0] - 1 , tab[0] - 1, tab[2] ,tab[3] ,surface);
 				DrawRect(tab[1] + 1, tab[1] + 1,tab[2] ,tab[3] ,surface);
-
+				free(tab);
 			}
 
 		}
 	}
-	free(tab);
 	return surface;
 }
 
