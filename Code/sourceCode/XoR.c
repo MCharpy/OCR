@@ -122,7 +122,6 @@ float BackPFirstLayer(float delta, float hidden , float input)
 
 
 
-
 void backPropagate(Matrix16 ErrorMatrix, float TotalError)
 {
 
@@ -142,7 +141,7 @@ void backPropagate(Matrix16 ErrorMatrix, float TotalError)
 	{
 
 
-		secondBias.values[getCoordinates16(i,0,secondBias)] -= BackPFirstLayer(ErrorMatrix[getCoordinates16(i,0,ErrorMatrix)] , lastLayer.values[getCoordinates16(i,0,lastLayer)] , 1.0) 
+		secondBias.values[getCoordinates16(i,0,secondBias)] -= BackPFirstLayer(ErrorMatrix.values[getCoordinates16(i,0,ErrorMatrix)] , lastLayer.values[getCoordinates16(i,0,lastLayer)] , 1.0) ;
 
  
 		for(int j = 0; j < secondWeights.y; j++)
@@ -158,7 +157,7 @@ void backPropagate(Matrix16 ErrorMatrix, float TotalError)
 
 	for(int i = 0; i < firstWeights.x;i++)
 	{
-		firstBias.values[getCoordinates16(i,0,firstBias)] -= BackPFirstLayer( DeltaMatrix.values[getCoordinates16(i,0,DeltaMatrix)] , intermediate.values[getCoordinates16(i,0,intermediate)] , toEval.values[getCoordinates16(j,0,toEval)]) ;
+		firstBias.values[getCoordinates16(i,0,firstBias)] -= BackPFirstLayer( DeltaMatrix.values[getCoordinates16(i,0,DeltaMatrix)] , intermediate.values[getCoordinates16(i,0,intermediate)] , 1.0) ;
 
 	
 		for(int j = 0; j < firstWeights.y; j++)

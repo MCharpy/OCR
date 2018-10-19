@@ -14,7 +14,7 @@ Matrix.o: ./sourceCode/Matrix.c
 XoR.o: ./sourceCode/XoR.c
 >   gcc -c ./sourceCode/XoR.c
 
-clear:
+clean:
 >   rm *.o
 >   rm *.elf
 
