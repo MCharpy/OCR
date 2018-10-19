@@ -14,8 +14,7 @@ SDL_Surface* RLSA();
 SDL_Surface* Segment_line();
 void extremum();
 void DrawRect();
-char* path = "test/texte7.bmp";
-int main()
+int process_image(char * path)
 {
 	int continu = 1;
 	if(SDL_Init(SDL_INIT_VIDEO))
