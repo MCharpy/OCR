@@ -2,11 +2,11 @@
 
 all: OCR
 
-OCR: OCR.o colorRemoval.o
->   gcc -Wall -Wextra -std=c99 OCR.o colorRemoval.o -o OCR.elf
+OCR: OCR.o image.o
+>   gcc -Wall -Wextra -std=c99 OCR.o image.o -o OCR.elf `sdl-config --cflags --libs`
 
-OCR.o: ./sourceCode/OCR.c ./sourceCode/colorRemoval.h
->    gcc -c ./sourceCode/OCR.c
+OCR.o: ./sourceCode/OCR.c ./sourceCode/image.h
+>    gcc -c ./sourceCode/OCR.c -Wall -Wextra -std=c99 `sdl-config --cflags --libs`
 
-colorRemoval.o: ./sourceCode/colorRemoval.c
->    gcc -c ./sourceCode/colorRemoval.c
+image.o: ./sourceCode/image.c
+>   gcc -c ./sourceCode/image.c -Wall -Wextra -std=c99 `sdl-config --cflags --libs`

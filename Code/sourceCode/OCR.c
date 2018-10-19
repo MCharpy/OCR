@@ -1,7 +1,8 @@
 #include <stdio.h>
-#include "colorRemoval.h"
+#include "image.h"
 
 int main(){
 
+    process_image("texte7.bmp");
 
 }
