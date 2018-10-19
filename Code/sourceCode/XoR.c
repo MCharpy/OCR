@@ -67,16 +67,15 @@ void train(int n)
 
     for (int i =0 ; i <n ; i++)
     {
-         int a = rand()%2;
-         int b = rand()%2;
+         int a = 1;
+         int b = 0;
 
          //printf("%i %i -> %i\n",a,b,eval(a,b,1));
 		 //for(int i = 0; i < n; i++)
 		 //{
 		 printf("%i %i -> %i\n",a,b,eval(a,b,1));
 
-         //	error1 += (a != b) - lastLayer.values[0];
-         //	error2 += (a == b) - lastLayer.values[1];
+
 		 float error1 = (a != b) - lastLayer.values[0];
 		 float error2 = (a == b) - lastLayer.values[1];
 	
@@ -157,8 +156,8 @@ void backPropagate(Matrix16 ErrorMatrix, float TotalError)
 
 	for(int i = 0; i < firstWeights.x;i++)
 	{
-		firstBias.values[getCoordinates16(i,0,firstBias)] -= BackPFirstLayer( DeltaMatrix.values[getCoordinates16(i,0,DeltaMatrix)] , intermediate.values[getCoordinates16(i,0,intermediate)] , 1.0) ;
-
+		firstBias.values[getCoordinates16(i,0,firstBias)] -= BackPFirstLayer(DeltaMatrix.values[getCoordinates16(i,0,DeltaMatrix)] , intermediate.values[getCoordinates16(i,0,intermediate)] , 1.0) ;
+		//printf("%f" ,DeltaMatrix.values[getCoordinates16(i,0,DeltaMatrix)]);
 	
 		for(int j = 0; j < firstWeights.y; j++)
 		{
