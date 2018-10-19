@@ -6,8 +6,10 @@
 int main(int argc, char** argv){
 
     //printf("%i",eval(1,0,0));
-    train(2);
-
+    for (int i = 0; i < 500; i++)
+	{
+		train(1000);
+	}
    
     /*
     Matrix16 mat1;
