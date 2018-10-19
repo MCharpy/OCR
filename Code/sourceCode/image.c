@@ -83,14 +83,21 @@ int process_image(char * path)
 					}
 					case SDLK_r:
 					{
-						Segment_line(RLSA(image,path,7,5),fenetre);
+						Segment_line(RLSA(image,path,10,5),fenetre);
 						SDL_Flip(fenetre);
 						break;
 					
 					}
 					case SDLK_t:
 					{
-						Segment_line(RLSA(image,path,20,5),fenetre);
+						Segment_line(RLSA(image,path,25,5),fenetre);
+						SDL_Flip(fenetre);
+						break;
+					}
+
+					case SDLK_y:
+					{
+						Segment_line(RLSA(image,path,25,20),fenetre);
 						SDL_Flip(fenetre);
 						break;
 					}
