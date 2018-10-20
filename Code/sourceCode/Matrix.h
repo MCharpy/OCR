@@ -19,26 +19,4 @@ void _SaveMatrix16(char p[], Matrix16 matrix);
 void _LoadMatrix16(char p[], Matrix16 *dest);
 
 
-
-
-
-
-
-
-
-
-
-typedef struct Matrix Matrix;
-struct Matrix{
-  int x;
-  int y;
-  float values[1000];
-    
-};
-
-void printMatrix(Matrix matrix);
-Matrix multMatrix(Matrix matrix1, Matrix matrix2);
-int GetCoordinates(int x, int y, Matrix matrix);
-Matrix addMatrix(Matrix matrix1, Matrix matrix2);
-
 #endif

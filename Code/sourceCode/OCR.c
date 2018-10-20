@@ -8,8 +8,9 @@
 int main(){
 
 
+    //Ask for choice of execution
+    //Ask again if the choice is invalid
     int choice = 0;
-
     while ((choice < 1 || choice > 3) && choice != 9)
     {
         printf("What would you like to do ?i\n     1. Process an image\n");
@@ -20,9 +21,12 @@ int main(){
     }
     int val1, val2;
     switch (choice){
+        //Load text7.bmp image and execute process_image on it
         case 1:
             process_image("texte7.bmp");
             break;
+
+        //Get values to XoR and prints the return value
         case 2:
             printf("XoR :\nFirst value\n");
             scanf("%i",&val1);
@@ -31,6 +35,8 @@ int main(){
             int result = eval(val1==0?0:1,val2==0?0:1,0);
             printf("%i XoR %i -> %i",val1,val2,result);
             break;
+
+        //Train n * 10 times the XoR neural network
         case 3:
             printf("How much training would you like to do?\n");
             scanf("%i",&val1);
@@ -41,7 +47,9 @@ int main(){
             break;
         default : 
             break;
-}
+    }
+
+    //Apply random values in the Matrix used in XoR
     if(choice == 9)
     {
         srand(time(NULL));
@@ -72,44 +80,5 @@ int main(){
 
 
     }
-
-
-    //printf("%i",eval(1,0,0));
-   
-    /*
-Matr:ix16 mat1;
-    Matrix16 mat2;
-    mat1.x = 4;
-    mat1.y = 2;
-    
-    mat2.x = 4;
-    mat2.y = 2;
-
-
-    for (int i = 0; i < 8; i++)
-    {
-        mat1.values[i]=i;
-        mat2.values[i]=i-0.2;
-    }
-
-
-    printMatrix16(mat1);
-    printMatrix16(mat2);
-
-    Matrix16 a = addMatrix16(mat1,mat2);
-    printMatrix16(a);
-    a = addMatrix16(a,mat1);
-    printMatrix16(a);
-    sigmoidify16(&a);
-    printMatrix16(a);
-    
-      int val1 = 0;
-      int val2 = 0;
-      if(argc > 1)
-        val1 = strtol(argv[1],NULL,10);
-      if (argc > 2)
-        val2 = strtol(argv[2],NULL,10);
-      printf("%s",eval(val1,val2,0)?"true":"false");*/
-     
     return 0;
 }

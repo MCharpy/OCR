@@ -20,7 +20,8 @@ Matrix16 lastLayer;
 void backPropagate(Matrix16 ErrorMatrix, float TotalError);
 float CreationDeltaMatrix(float Error,float ActualOut,float PreviousOut,Matrix16 * DeltaMatrix, int j , float weight);
 
-
+//Evaluates XoR on a and b.
+//If training == 0, it loads the Matrix otherwise they already are loaded
 int eval(int a, int b , int training){
     
     if(!training)
@@ -50,6 +51,7 @@ int eval(int a, int b , int training){
     
 }
 
+//Trains n times the neural network
 void train(int n)
 {
     srand(time(NULL));

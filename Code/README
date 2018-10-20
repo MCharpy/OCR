@@ -1,1 +1,10 @@
-This project was created as an OCR EPITA project by the ASMR group
+Pour utiliser l'application, il suffit d'executer OCR.elf
+
+4 options sont alors proposees :
+    - essayer les fonctions sur image
+    - evaluer 2 valeurs par le XoR
+    - entrainer le XoR
+    - reinitialiser les valeurs utilisees par le XoR
+
+Pour les fonctions sur image, les touches sont les suivantes :
+

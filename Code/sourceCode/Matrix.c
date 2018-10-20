@@ -2,6 +2,11 @@
 #include <math.h>
 #include <stdlib.h>
 
+
+//Structure Matrix16 is a structure for for Matrix with a max of 16 number of values
+//      x is the x size of the matrix
+//      y is the y size of the matrix
+//      values contains the values of the Matrix16
 typedef struct Matrix16 Matrix16;
 struct Matrix16 {
     int x;
@@ -9,10 +14,16 @@ struct Matrix16 {
     float values[16];
 };
 
+//getCoordinates16 returns the index in value of the x,y value
+//      x is the x coordinate you want
+//      y is the y coordinate you want
+//      matrix is the Matrix16 in wich you want a value
 int getCoordinates16(int x, int y, Matrix16 matrix){
     return y + x*((matrix.y));
 }
 
+//multMatrix16 returns the product of 2 Matrix16
+//      matrix1 and matrix2 are the 2 Matrix16 to multiply
 Matrix16 multMatrix16(Matrix16 matrix1, Matrix16 matrix2){
     Matrix16 toReturn;
     if(matrix1.y != matrix2.x){
@@ -38,7 +49,8 @@ Matrix16 multMatrix16(Matrix16 matrix1, Matrix16 matrix2){
     return toReturn;
 }
 
-
+//addMatrix16 returns the sum of 2 Matrix16
+//      matrix1 and matrix2 are the 2 Matrix16 to add
 Matrix16 addMatrix16(Matrix16 matrix1, Matrix16 matrix2){
     Matrix16 toReturn;
     if(matrix1.x != matrix2.x || matrix1.y != matrix2.y){
@@ -54,6 +66,8 @@ Matrix16 addMatrix16(Matrix16 matrix1, Matrix16 matrix2){
     return toReturn;
 }
 
+//printMatrix16 prints a Matrix16
+//      matrix is the Matrix16 to print
 void printMatrix16(Matrix16 matrix){
     printf("\n");
     if(matrix.x<1||matrix.y<1)
@@ -69,6 +83,8 @@ void printMatrix16(Matrix16 matrix){
     printf("\n");
 }
 
+//sigmoidify16 apply the sigmoid function to the matrix
+//      matrix is the Matrix16 to sigmoidify
 void sigmoidify16(Matrix16 *matrix)
 {
     for (int i = 0; i< matrix->x*matrix->y; i++)
@@ -76,7 +92,9 @@ void sigmoidify16(Matrix16 *matrix)
 }
 
 
-
+//_SaveMatrix16 saves a Matrix16 to a file
+//      p is the path where you want to save the Matrix16
+//      matrix is the Matrix16 to save
 void _SaveMatrix16(char p[], Matrix16 matrix)
 {
 	FILE *fp;
@@ -87,6 +105,9 @@ void _SaveMatrix16(char p[], Matrix16 matrix)
 	fclose(fp);
 }
 
+//_LoadMatrix16 loads a Matrix16 from a file
+//      p is the path of the file
+//      dest is a pointer to a Matrix16 getting the file values
 void _LoadMatrix16(char p[],Matrix16 *dest)
 {
 	float tab[16];
