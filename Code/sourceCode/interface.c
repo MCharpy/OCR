@@ -1,24 +1,51 @@
+#include <stdlib.h>
 #include <gtk/gtk.h>
 
-static void activate (GtkApplication* app)
+void mafonction(GtkWidget *widget, gpointer data)
 {
-    GtkWidget *window;
-
-    window = gtk_application_window_new(app);
-    gtk_window_set_title(GTK_WINDOW (window), "Window");
-    gtk_window_set_default_size(GTK_WINDOW(window), 200, 200);
-    gtk_widget_show_all(window);
+    printf("Merci d'avoir choisi ASMR\n");
+    gtk_main_quit();
 }
 
 int main(int argc, char **argv)
 {
-    GtkApplication *app;
-    int status;
+    /* Variables */
+    GtkWidget* MainWindow;
+    GtkWidget* label;
+    gchar* TexteLabel;
 
-    app = gtk_application_new("org.gtk.example", G_APPLICATION_FLAGS_NONE);
-    g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
-    status = g_application_run(G_APPLICATION(app), argc, argv);
-    g_object_unref(app);
+    /* Initialisation de GTK+ */
+    gtk_init(&argc, &argv);
 
-    return status;
+    /* Création de la fenêtre*/
+    MainWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL); //definition de la fenêtre
+    g_signal_connect(G_OBJECT(MainWindow), "delete-event",
+                     G_CALLBACK(mafonction), NULL);
+   
+    /* Personnalisation de la fenêtre */
+    gtk_window_set_title(GTK_WINDOW(MainWindow), "A.S.M.R.: O.C.R"); //titre de 
+                                                                     //la fenêtre
+    gtk_window_set_default_size(GTK_WINDOW(MainWindow), 500, 500); //taille de
+                                                                   //la fenêtre
+
+    /*Création du label*/
+    TexteLabel = g_locale_to_utf8("Voici notre OCR", -1, NULL, NULL, NULL); 
+                                                             //générer un texte
+                                                             //qui sera rendu par
+                                                             //pango
+    label = gtk_label_new(TexteLabel); //definition du label avec le texte généré
+    g_free(TexteLabel); //libération de la mémoire
+    gtk_label_set_use_markup(GTK_LABEL(label), TRUE); //on dit qu'on utilise les
+                                                      //balises pango 
+    gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);//centrer le texte
+    gtk_container_add(GTK_CONTAINER(MainWindow), label); //ajouter le label à la 
+                                                         //fenêtre
+
+    
+    /*Affichage et "boucle évènementielle" */
+    gtk_widget_show_all(MainWindow); //afficher 'MainWindow' et ses enfants
+    gtk_main();
+
+    /* Fermeture de GTK+ */
+    return EXIT_SUCCESS;
 }
