@@ -7,4 +7,13 @@ Pour utiliser l'application, il suffit d'executer OCR.elf
     - reinitialiser les valeurs utilisees par le XoR
 
 Pour les fonctions sur image, les touches sont les suivantes :
+	& -> colortogrey()
+	" -> Blacknwhite()
+	a -> RLSA_width()
+	b -> copy() // reload image
+	z -> RLSA()
+	e -> letter segmentation
+	r -> word segmentation
+	t -> line segmentation
+	y -> bloc segmentation
 
