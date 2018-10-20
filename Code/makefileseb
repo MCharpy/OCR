@@ -1,2 +1,0 @@
-image : image.c
-	gcc image.c -Wall -Wextra -std=c99 `sdl-config --cflags --libs` -o image; ./image                                                                                                                                                                   	

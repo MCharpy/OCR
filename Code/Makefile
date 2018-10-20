@@ -10,3 +10,10 @@ OCR.o: ./sourceCode/OCR.c ./sourceCode/image.h
 
 image.o: ./sourceCode/image.c
 >   gcc -c ./sourceCode/image.c -Wall -Wextra -std=c99 `sdl-config --cflags --libs`
+
+clean:
+>	rm -rf *.o
+>	rm -rf *.elf
+>	rm -rf *.swp
+>	rm -rf *.swo
+>	rm -rf *.d
