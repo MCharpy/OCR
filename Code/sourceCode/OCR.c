@@ -6,15 +6,77 @@
 
 int main(){
 
-    process_image("texte7.bmp");
+
+    int choice = 0;
+
+    while ((choice < 1 || choice > 3) && choice != 9)
+    {
+        printf("What would you like to do ?i\n     1. Process an image\n");
+        printf("     2. Evalutate XoRi\n     3. Train XoR\n");
+        printf("     9. Reset XoR values\n");
+    
+        scanf("%i",&choice);
+    }
+    char path[25];
+    int val1, val2;
+    switch (choice){
+        case 1:
+            printf("What is the path to your image ?\n");
+            scanf("%20s",path);
+            process_image(path);
+            break;
+        case 2:
+            printf("XoR :\nFirst value\n");
+            scanf("%i",&val1);
+            printf("Second value\n");
+            scanf("%i",&val2);
+            int result = eval(val1==0?0:1,val2==0?0:1,0);
+            printf("%i XoR %i -> %i",val1,val2,result);
+            break;
+        case 3:
+            printf("How much training would you like to do?\n");
+            scanf("%i",&val1);
+            for (int i = 0; i < val1 ; i++)
+            {
+                train(10);
+            }
+            break;
+        default : 
+            break;
+}
+    if(choice == 9)
+    {
+        Matrix16 firstWeights;
+        Matrix16 firstBias;
+        Matrix16 secondWeights;
+        Matrix16 secondBias;
+        _LoadMatrix16("firstWeights.mat",&firstWeights);
+        _LoadMatrix16("firstBias.mat",&firstBias);
+        _LoadMatrix16("secondWeights.mat",&secondWeights);
+        _LoadMatrix16("secondBias.mat",&secondBias);
+
+        for(int i = 0; i<8 ; i++)
+        {
+            firstWeights.values[i]=(float)i/8;
+            firstBias.values[i]=(float)i/6;
+            secondWeights.values[i]=(float)i/4;
+            secondBias.values[i]=(float)i/2;
+
+        }
+
+        _SaveMatrix16("firstWeights.mat",firstWeights);
+        _SaveMatrix16("firstBias.mat",firstBias);
+        _SaveMatrix16("secondWeights.mat",secondWeights);
+        _SaveMatrix16("secondBias.mat",secondBias);
+
+
+    }
+
+
     //printf("%i",eval(1,0,0));
-    for (int i = 0; i < 500; i++)
-	{
-		train(100);
-	}
    
     /*
-    Matrix16 mat1;
+Matr:ix16 mat1;
     Matrix16 mat2;
     mat1.x = 4;
     mat1.y = 2;

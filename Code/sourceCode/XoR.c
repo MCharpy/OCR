@@ -3,6 +3,9 @@
 #include <time.h>
 #include <stdlib.h>
 
+#define RED "\x1B[31m"
+#define GREEN "\x1B[32m"
+#define WHITE "\x1B[37m"
 
 Matrix16 firstWeights;
 Matrix16 firstBias;
@@ -67,10 +70,12 @@ void train(int n)
 
     for (int i =0 ; i <n ; i++)
     {
-         int a = 1;
-         int b = 0;
+         int a = rand()%2;
+         int b = rand()%2;
+         int c = rand()%2;
 
-		 printf("%i %i -> %i\n",a,b,eval(a,b,1));
+         int result = eval(a,b,1);
+		 printf("%i %i -> %s%i%s\n",a,b,a^b==result?GREEN:RED, result,WHITE);
 
 		 float error1 = (a != b) - lastLayer.values[0];
 		 float error2 = (a == b) - lastLayer.values[1];
