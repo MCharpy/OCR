@@ -18,13 +18,10 @@ int main(){
     
         scanf("%i",&choice);
     }
-    char path[25];
     int val1, val2;
     switch (choice){
         case 1:
-            printf("What is the path to your image ?\n");
-            scanf("%20s",path);
-            process_image(path);
+            process_image("texte7.bmp");
             break;
         case 2:
             printf("XoR :\nFirst value\n");
@@ -61,10 +58,10 @@ int main(){
 
         for(int i = 0; i<8 ; i++)
         {
-            firstWeights.values[i]=(float)rand()/RAND_MAX*2.0-1;
-            firstBias.values[i]=(float)rand()/RAND_MAX*2.0-1;
-            secondWeights.values[i]=(float)rand()/RAND_MAX*2.0-1;
-            secondBias.values[i]=(float)rand()/RAND_MAX*2.0-1;
+            firstWeights.values[i]=(float)rand()/RAND_MAX*2.0-1.0;
+            firstBias.values[i]=(float)rand()/RAND_MAX-1.0;
+            secondWeights.values[i]=(float)rand()/RAND_MAX*2.0-1.0;
+            secondBias.values[i]=(float)rand()/RAND_MAX-1.0;
 
         }
 
