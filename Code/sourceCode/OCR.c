@@ -4,7 +4,7 @@
 #include "Matrix.h"
 #include "XoR.h"
 
-int main(int argc, char** argv){
+int main(){
 
     process_image("texte7.bmp");
     //printf("%i",eval(1,0,0));
