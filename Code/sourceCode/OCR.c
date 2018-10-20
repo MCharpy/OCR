@@ -1,6 +1,7 @@
 #include <stdio.h>
-#include "image.h"
 #include <stdlib.h>
+#include <time.h>
+#include "image.h"
 #include "Matrix.h"
 #include "XoR.h"
 
@@ -46,6 +47,9 @@ int main(){
 }
     if(choice == 9)
     {
+        srand(time(NULL));
+
+
         Matrix16 firstWeights;
         Matrix16 firstBias;
         Matrix16 secondWeights;
@@ -57,10 +61,10 @@ int main(){
 
         for(int i = 0; i<8 ; i++)
         {
-            firstWeights.values[i]=(float)i/8;
-            firstBias.values[i]=(float)i/6;
-            secondWeights.values[i]=(float)i/4;
-            secondBias.values[i]=(float)i/2;
+            firstWeights.values[i]=(float)rand()/RAND_MAX*2.0-1;
+            firstBias.values[i]=(float)rand()/RAND_MAX*2.0-1;
+            secondWeights.values[i]=(float)rand()/RAND_MAX*2.0-1;
+            secondBias.values[i]=(float)rand()/RAND_MAX*2.0-1;
 
         }
 
