@@ -18,7 +18,8 @@ Matrix16 intermediate;
 Matrix16 lastLayer;
 
 void backPropagate(Matrix16 ErrorMatrix, float TotalError);
-float CreationDeltaMatrix(float Error,float ActualOut,float PreviousOut,Matrix16 * DeltaMatrix, int j , float weight);
+float CreationDeltaMatrix(float Error,float ActualOut,
+        float PreviousOut,Matrix16 * DeltaMatrix, int j , float weight);
 
 //Evaluates XoR on a and b.
 //If training == 0, it loads the Matrix otherwise they already are loaded
@@ -84,8 +85,10 @@ void train(int n)
 		 float TotalError = (error1*error1)/2 + (error2*error2)/2;
 		 
 		 
-	 	 ErrorMatrix.values[getCoordinates16(0,0,ErrorMatrix)] = (a != b) - lastLayer.values[0];
-         ErrorMatrix.values[getCoordinates16(1,0,ErrorMatrix)] = (a == b) - lastLayer.values[1];
+	 	 ErrorMatrix.values[getCoordinates16(0,0,ErrorMatrix)] = 
+             (a != b) - lastLayer.values[0];
+         ErrorMatrix.values[getCoordinates16(1,0,ErrorMatrix)] = 
+             (a == b) - lastLayer.values[1];
 		 
          backPropagate(ErrorMatrix,TotalError);	
     }
@@ -103,7 +106,8 @@ void train(int n)
 
 
 
-float CreationDeltaMatrix(float Error,float ActualOut,float PreviousOut,Matrix16 * DeltaMatrix, int j , float weight)
+float CreationDeltaMatrix(float Error,float ActualOut,
+        float PreviousOut,Matrix16 * DeltaMatrix, int j , float weight)
 {
 	float delta = -Error * ActualOut * (1 - ActualOut);
 	DeltaMatrix->values[getCoordinates16(j,0,*DeltaMatrix)] += delta * weight;
@@ -139,12 +143,23 @@ void backPropagate(Matrix16 ErrorMatrix, float TotalError)
 	{
 
 
-		secondBias.values[getCoordinates16(i,0,secondBias)] -= DerivativeFormula(ErrorMatrix.values[getCoordinates16(i,0,ErrorMatrix)] , lastLayer.values[getCoordinates16(i,0,lastLayer)] , 1.0) ;
+		secondBias.values[getCoordinates16(i,0,secondBias)] -= 
+            DerivativeFormula(
+                    ErrorMatrix.values[getCoordinates16(i,0,ErrorMatrix)] , 
+                    lastLayer.values[getCoordinates16(i,0,lastLayer)] , 
+                    1.0) ;
 
  
 		for(int j = 0; j < secondWeights.y; j++)
 		{
-			secondWeights.values[getCoordinates16(i,j,secondWeights)] -= CreationDeltaMatrix(ErrorMatrix.values[getCoordinates16(i,0,ErrorMatrix)] , lastLayer.values[getCoordinates16(i,0,lastLayer)], intermediate.values[getCoordinates16(j,0,intermediate)], &DeltaMatrix , j , secondWeights.values[getCoordinates16(i,j,secondWeights)] );
+			secondWeights.values[getCoordinates16(i,j,secondWeights)] -= 
+                CreationDeltaMatrix(
+                   ErrorMatrix.values[getCoordinates16(i,0,ErrorMatrix)] , 
+                   lastLayer.values[getCoordinates16(i,0,lastLayer)], 
+                   intermediate.values[getCoordinates16(j,0,intermediate)], 
+                   &DeltaMatrix , 
+                   j , 
+                   secondWeights.values[getCoordinates16(i,j,secondWeights)] );
 
 		}
 	}
@@ -152,11 +167,19 @@ void backPropagate(Matrix16 ErrorMatrix, float TotalError)
 
 	for(int i = 0; i < firstWeights.x;i++)
 	{
-		firstBias.values[getCoordinates16(i,0,firstBias)] -= DerivativeFormula(DeltaMatrix.values[getCoordinates16(i,0,DeltaMatrix)] , intermediate.values[getCoordinates16(i,0,intermediate)] , 1.0) ;
-	
+		firstBias.values[getCoordinates16(i,0,firstBias)] -= 
+            DerivativeFormula(
+                   DeltaMatrix.values[getCoordinates16(i,0,DeltaMatrix)] ,
+                   intermediate.values[getCoordinates16(i,0,intermediate)] , 
+                   1.0) ;
+
 		for(int j = 0; j < firstWeights.y; j++)
 		{
-			firstWeights.values[getCoordinates16(i,j,firstWeights)] -= DerivativeFormula( DeltaMatrix.values[getCoordinates16(i,0,DeltaMatrix)] , intermediate.values[getCoordinates16(i,0,intermediate)] , toEval.values[getCoordinates16(j,0,toEval)]) ;
+			firstWeights.values[getCoordinates16(i,j,firstWeights)] -= 
+                DerivativeFormula(
+                   DeltaMatrix.values[getCoordinates16(i,0,DeltaMatrix)] , 
+                   intermediate.values[getCoordinates16(i,0,intermediate)],
+                   toEval.values[getCoordinates16(j,0,toEval)]) ;
 
 		}
 	}
