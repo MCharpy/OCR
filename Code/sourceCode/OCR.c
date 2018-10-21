@@ -4,6 +4,7 @@
 #include "image.h"
 #include "Matrix.h"
 #include "XoR.h"
+#include "interface.h"
 
 int main(){
 
@@ -11,11 +12,12 @@ int main(){
     //Ask for choice of execution
     //Ask again if the choice is invalid
     int choice = 0;
-    while ((choice < 1 || choice > 3) && choice != 9)
+    while ((choice < 1 || choice > 4) && choice != 9)
     {
-        printf("What would you like to do ?i\n     1. Process an image\n");
-        printf("     2. Evalutate XoRi\n     3. Train XoR\n");
-        printf("     9. Reset XoR values\n");
+        printf("What would you like to do ?i\n    1. Process an image\n");
+        printf("    2. Evalutate XoRi\n    3. Train XoR\n");
+        printf("    4. Preview Interface\n");
+        printf("    9. Reset XoR values\n");
     
         scanf("%i",&choice);
     }
@@ -45,6 +47,9 @@ int main(){
                 train(10);
             }
             break;
+        //Preview Interface
+        case 4:
+            interface(0, NULL);
         default : 
             break;
     }

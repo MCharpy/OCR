@@ -1,10 +1,8 @@
-#include <stdlib.h>
-#include <gtk/gtk.h>
+#include "interface.h"
 
 
 void fin(GtkWidget *widget, gpointer data)
 {
-    printf("Merci d'avoir choisi ASMR\n");
     gtk_main_quit();
 }
 
@@ -62,7 +60,7 @@ void sauvegarde_fichier(GtkWidget *widget, gpointer data)
     g_free(text_to_save);
 }
 
-int main(int argc, char **argv)
+int interface(int argc, char **argv)
 {
     /* Variables */
     GtkWidget* MainWindow;
