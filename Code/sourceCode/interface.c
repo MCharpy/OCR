@@ -27,17 +27,38 @@ void lancer_OCR(GtkWidget *widget, gpointer data)
 void sauvegarde_fichier(GtkWidget *widget, gpointer data)
 {
     gchar *text_to_save;
-    gchar *filename;
+    //gchar *filename;
     GtkTextIter start;
     GtkTextIter end;
+    //GtkWidget *dialog;
+    //gint res;
+    /*
+    dialog = gtk_file_chooser_dialog_new ("Enregistrer Sous",
+                                           data.window,
+                                           GTK_FILE_CHOOSER_ACTION_SAVE,
+                                           "_Cancel",
+                                           GTK_RESPONSE_CANCEL,
+                                           "_Open",
+                                           GTK_RESPONSE_ACCEPT,
+                                           NULL);
 
-    //TODO : creer filechooserdialog pour enregistrer
+    gtk_file_chooser_set_do_overwrite_confirmation (GTK_FILE_CHOOSER(dialog),
+                                                    TRUE);
+    res = gtk_dialog_run (GTK_DIALOG (dialog));
+    if (res == GTK_RESPONSE_ACCEPT)
+    {
+        char *filename;
 
+        filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER(dialog));
+        printf("%s\n",filename);
+        g_free (filename);
+    }
+    */
     gtk_text_buffer_get_bounds(data, &start, &end);
-    filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget));
+    //filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget));
     text_to_save = gtk_text_buffer_get_text(data, &start, &end, FALSE);
     printf("%s\n",text_to_save);//sauvegarde du texte dans un fichier
-    g_free(filename);
+    //g_free(filename);
     g_free(text_to_save);
 }
 
@@ -133,6 +154,8 @@ int main(int argc, char **argv)
     g_signal_connect(G_OBJECT(runButton), "clicked",
                      G_CALLBACK(lancer_OCR), button);
     saveButton = gtk_button_new_with_label("Enregistrer sous...");
+
+   
     g_signal_connect(G_OBJECT(saveButton), "clicked",
                      G_CALLBACK(sauvegarde_fichier), textBuffer); //recevoir le 
                                                                 //signal clicked
