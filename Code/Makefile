@@ -17,7 +17,14 @@ Matrix.o: ./sourceCode/Matrix.c
 XoR.o: ./sourceCode/XoR.c
 >   gcc -c ./sourceCode/XoR.c
 
-clean:
->   rm *.o
->   rm *.elf
 
+interface: ./sourceCode/interface.c
+>	gcc -Wall -Wextra -std=c99 `pkg-config --cflags gtk+-3.0` ./sourceCode/interface.c -o interface.elf `pkg-config --libs gtk+-3.0`
+
+
+clean:
+>	rm -rf *.o
+>	rm -rf *.elf
+>	rm -rf .*.swp
+>	rm -rf .*.swo
+>	rm -rf *.d
