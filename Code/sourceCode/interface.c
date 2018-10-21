@@ -1,5 +1,5 @@
 #include "interface.h"
-
+#include "image.h"
 
 void fin(GtkWidget *widget, gpointer data)
 {
@@ -13,7 +13,7 @@ void lancer_OCR(GtkWidget *widget, gpointer data)
     filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(data));
     if(filename != NULL)
     {
-        printf("%s\n",filename);
+        process_image(filename);
     }
     else
     {
