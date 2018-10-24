@@ -27,10 +27,10 @@ int eval(int a, int b , int training){
     
     if(!training)
     {
-        _LoadMatrix16("firstWeights.mat",&firstWeights);
-        _LoadMatrix16("firstBias.mat",&firstBias);
-        _LoadMatrix16("secondWeights.mat",&secondWeights);
-        _LoadMatrix16("secondBias.mat",&secondBias);
+        _LoadMatrix16("XoRmat/firstWeights.mat",&firstWeights);
+        _LoadMatrix16("XoRmat/firstBias.mat",&firstBias);
+        _LoadMatrix16("XoRmat/secondWeights.mat",&secondWeights);
+        _LoadMatrix16("XoRmat/secondBias.mat",&secondBias);
     }
 
 
@@ -57,10 +57,10 @@ void train(int n)
 {
     srand(time(NULL));
 
-    _LoadMatrix16("firstWeights.mat",&firstWeights);
-    _LoadMatrix16("firstBias.mat",&firstBias);
-    _LoadMatrix16("secondWeights.mat",&secondWeights);
-    _LoadMatrix16("secondBias.mat",&secondBias);
+    _LoadMatrix16("XoRmat/firstWeights.mat",&firstWeights);
+    _LoadMatrix16("XoRmat/firstBias.mat",&firstBias);
+    _LoadMatrix16("XoRmat/secondWeights.mat",&secondWeights);
+    _LoadMatrix16("XoRmat/secondBias.mat",&secondBias);
     
     
     Matrix16 ErrorMatrix;
@@ -94,10 +94,10 @@ void train(int n)
     }
 
 		
-    _SaveMatrix16("firstWeights.mat",firstWeights);
-    _SaveMatrix16("firstBias.mat",firstBias);
-    _SaveMatrix16("secondWeights.mat",secondWeights);
-    _SaveMatrix16("secondBias.mat",secondBias);
+    _SaveMatrix16("XoRmat/firstWeights.mat",firstWeights);
+    _SaveMatrix16("XoRmat/firstBias.mat",firstBias);
+    _SaveMatrix16("XoRmat/secondWeights.mat",secondWeights);
+    _SaveMatrix16("XoRmat/secondBias.mat",secondBias);
 
 
 }

@@ -64,10 +64,10 @@ int main(){
         Matrix16 firstBias;
         Matrix16 secondWeights;
         Matrix16 secondBias;
-        _LoadMatrix16("firstWeights.mat",&firstWeights);
-        _LoadMatrix16("firstBias.mat",&firstBias);
-        _LoadMatrix16("secondWeights.mat",&secondWeights);
-        _LoadMatrix16("secondBias.mat",&secondBias);
+        _LoadMatrix16("XoRmat/firstWeights.mat",&firstWeights);
+        _LoadMatrix16("XoRmat/firstBias.mat",&firstBias);
+        _LoadMatrix16("XoRmat/secondWeights.mat",&secondWeights);
+        _LoadMatrix16("XoRmat/secondBias.mat",&secondBias);
 
         for(int i = 0; i<8 ; i++)
         {
@@ -78,10 +78,10 @@ int main(){
 
         }
 
-        _SaveMatrix16("firstWeights.mat",firstWeights);
-        _SaveMatrix16("firstBias.mat",firstBias);
-        _SaveMatrix16("secondWeights.mat",secondWeights);
-        _SaveMatrix16("secondBias.mat",secondBias);
+        _SaveMatrix16("XoRmat/firstWeights.mat",firstWeights);
+        _SaveMatrix16("XoRmat/firstBias.mat",firstBias);
+        _SaveMatrix16("XoRmat/secondWeights.mat",secondWeights);
+        _SaveMatrix16("XoRmat/secondBias.mat",secondBias);
 
 
     }
