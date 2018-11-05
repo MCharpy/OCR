@@ -1,0 +1,21 @@
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+0123456789
+.,:;"'(){}[]!?@$%&-+=
+
+83 char
+
+355 intermedi
+
+
+
+784x1   =     784   Entree
+784x355 = 199 920   Weight1
+355x1         355   Intermediate    bias2
+355x83  =  29 465   Weight2
+83x1    =      83   Sortie          bias2   error
+
+
+
+Weight1 * entree
+Weight2 * intermediate

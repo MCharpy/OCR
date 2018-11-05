@@ -3,7 +3,8 @@
 #include <stdlib.h>
 
 
-//Structure Matrix16 is a structure for for Matrix with a max of 16 number of values
+//Structure Matrix16 is a structure for for Matrix with a max of 16 number of 
+//values
 //      x is the x size of the matrix
 //      y is the y size of the matrix
 //      values contains the values of the Matrix16
