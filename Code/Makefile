@@ -1,11 +1,11 @@
 .RECIPEPREFIX = > 
 
-all: OCR
+all: OCR ; ./OCR.elf
 
-OCR: OCR.o image.o Matrix.o XoR.o interface.o
->   gcc -Wall -Wextra -std=c99 `pkg-config --cflags gtk+-3.0` OCR.o image.o Matrix.o XoR.o interface.o -o OCR.elf  `pkg-config --libs gtk+-3.0` `sdl-config --cflags --libs` -lm
+OCR: OCR.o BigMatrix.o ocrNeuralNetwork.o
+>   gcc -g -Wall -Wextra -std=c99 `pkg-config --cflags gtk+-3.0` OCR.o BigMatrix.o ocrNeuralNetwork.o -o OCR.elf  `pkg-config --libs gtk+-3.0` `sdl-config --cflags --libs` -lm
 
-OCR.o: ./sourceCode/OCR.c ./sourceCode/image.h ./sourceCode/Matrix.h ./sourceCode/XoR.h ./sourceCode/interface.h
+OCR.o: ./sourceCode/OCR.c ./sourceCode/BigMatrix.h ./sourceCode/ocrNeuralNetwork.h
 >    gcc -c `pkg-config --cflags gtk+-3.0` ./sourceCode/OCR.c -Wall -Wextra -std=c99 `pkg-config --libs gtk+-3.0` `sdl-config --cflags --libs`
 
 image.o: ./sourceCode/image.c
@@ -21,6 +21,12 @@ XoR.o: ./sourceCode/XoR.c
 interface.o: ./sourceCode/interface.c ./sourceCode/image.h
 >	gcc -std=c99 `pkg-config --cflags gtk+-3.0` ./sourceCode/interface.c -c `pkg-config --libs gtk+-3.0` `sdl-config --cflags --libs`
 
+
+ocrNeuralNetwork.o: ./sourceCode/ocrNeuralNetwork.c
+>   gcc -c ./sourceCode/ocrNeuralNetwork.c
+
+BigMatrix.o: ./sourceCode/BigMatrix.c
+>    gcc -c ./sourceCode/BigMatrix.c
 
 
 clean:

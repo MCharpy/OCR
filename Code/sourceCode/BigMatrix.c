@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <err.h>
 
 
 //structure Matrix is a structure for matrix with a max of 784 number of values
@@ -18,7 +19,10 @@ Matrix createMatrix(int x,int y){
     Matrix mat;
     mat.x = x;
     mat.y = y;
+    mat.values=NULL;
     mat.values = malloc(x*y*sizeof(float));
+    if(mat.values== NULL)
+        errx(42,"Memoire insuffisante");
     return mat;
 }
 
@@ -27,8 +31,8 @@ Matrix createMatrix(int x,int y){
 //      x is the x coordinate you want
 //      y is the y coordinate you want
 //      matrix is the Matrix in wich you want a value
-int getCoordinates(int x, int y, Matrix matrix){
-    return y + x*(matrix.y);
+int getCoordinates(int x, int y, Matrix *matrix){
+    return y + x*(matrix->y);
 }
 
 //multMatrix returns the product of 2 Matrix
@@ -43,11 +47,11 @@ Matrix multMatrix(Matrix matrix1, Matrix matrix2){
         for(int p=0; p<matrix2.y; p++){
             float sum = 0;
             for(int k= 0; k < matrix1.y; k++){
-                float inMat1 = matrix1.values[getCoordinates(m,k,matrix1)];
-                float inMat2 = matrix2.values[getCoordinates(k,p,matrix2)];
+                float inMat1 = matrix1.values[getCoordinates(m,k,&matrix1)];
+                float inMat2 = matrix2.values[getCoordinates(k,p,&matrix2)];
                 sum += inMat1*inMat2;
             }
-            toReturn.values[getCoordinates(m,p,toReturn)] = sum;
+            toReturn.values[getCoordinates(m,p,&toReturn)] = sum;
         }
     }
 
@@ -96,13 +100,13 @@ void sigmoidify(Matrix *matrix)
 //_SaveMatrix saves a Matrix to a file
 //      p is the path where you want to save the Matrix
 //      matrix is the Matrix to save
-void _SaveMatrix(char p[], Matrix matrix)
+void _SaveMatrix(char p[], Matrix *matrix)
 {
 	FILE *fp;
 	fp = fopen(p,"w");
-	fprintf(fp,"%i%s%i%s",matrix.x,"\n",matrix.y,"\n");
-	for(int i = 0 ; i < matrix.x*matrix.y;i++)
-		fprintf(fp,"%f%s",matrix.values[i],"\n");
+	fprintf(fp,"%i%s%i%s",matrix->x,"\n",matrix->y,"\n");
+	for(int i = 0 ; i < matrix->x*matrix->y;i++)
+		fprintf(fp,"%f%s",matrix->values[i],"\n");
 	fclose(fp);
 }
 
@@ -120,12 +124,22 @@ Matrix _LoadMatrix(char p[])
 	int d = strtol(a,NULL,10);
 	char s[10] = "";
     Matrix dest = createMatrix(c,d);
-	for(int i = 0; i < c*d;i++)
+    for(int i = 0; i < c*d;i++)
 	{
 		fgets(a,15,fp);
 		dest.values[i] = atof(a);
 	}
 	fclose(fp);
+    return dest;
 }
 
-
+void resetMatrix(char p[],int bias)
+{
+    Matrix toReset = _LoadMatrix(p);
+    for (int i =0 ; i< toReset.x*toReset.y;i++)
+    {
+         toReset.values[i]=((float)rand()/RAND_MAX*(bias?1:2.0)-1); 
+    }
+    _SaveMatrix(p,&toReset);
+    free(toReset.values);
+}

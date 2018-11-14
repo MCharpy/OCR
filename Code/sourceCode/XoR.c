@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "Matrix.h"
+#include "BigMatrix.h"
 #include <time.h>
 #include <stdlib.h>
 
@@ -7,19 +7,19 @@
 #define GREEN "\x1B[32m"
 #define WHITE "\x1B[37m"
 
-Matrix16 firstWeights;
-Matrix16 firstBias;
-Matrix16 secondWeights;
-Matrix16 secondBias;
+Matrix weights1;
+Matrix bias1;
+Matrix weights2;
+Matrix bias2;
 
-Matrix16 toEval;
+Matrix toEval;
 
-Matrix16 intermediate;
-Matrix16 lastLayer;
+Matrix intermediate;
+Matrix lastLayer;
 
-void backPropagate(Matrix16 ErrorMatrix, float TotalError);
+void backPropagate(Matrix ErrorMatrix, float TotalError);
 float CreationDeltaMatrix(float Error,float ActualOut,
-        float PreviousOut,Matrix16 * DeltaMatrix, int j , float weight);
+        float PreviousOut,Matrix * DeltaMatrix, int j , float weight);
 
 //Evaluates XoR on a and b.
 //If training == 0, it loads the Matrix otherwise they already are loaded
@@ -27,28 +27,42 @@ int eval(int a, int b , int training){
     
     if(!training)
     {
-        _LoadMatrix16("XoRmat/firstWeights.mat",&firstWeights);
-        _LoadMatrix16("XoRmat/firstBias.mat",&firstBias);
-        _LoadMatrix16("XoRmat/secondWeights.mat",&secondWeights);
-        _LoadMatrix16("XoRmat/secondBias.mat",&secondBias);
+        weights1 = _LoadMatrix("OCRmat/weights1.mat");
+        bias1 = _LoadMatrix("OCRmat/bias1.mat");
+        weights2 = _LoadMatrix("OCRmat/weights2.mat");
+        bias2 = _LoadMatrix("OCRmat/bias2.mat");
     }
 
 
-    toEval.x=2;
-    toEval.y=1;
+    toEval = createMatrix(2,1);
+
     toEval.values[0]=(a==0?0:1);
     toEval.values[1]=(b==0?0:1);
-    intermediate = multMatrix16(firstWeights,toEval);
-    intermediate = addMatrix16(intermediate,firstBias);
-    sigmoidify16(&intermediate);
 
-    lastLayer = multMatrix16(secondWeights,intermediate);
-    lastLayer = addMatrix16(lastLayer,secondBias);
-    sigmoidify16(&lastLayer);
+    Matrix intermediatetmp = multMatrix(weights1,toEval);
+    intermediate = addMatrix(intermediatetmp,bias1);
+    free(intermediatetmp.values);
 
-  
+    sigmoidify(&intermediate);
 
-    return lastLayer.values[0]>lastLayer.values[1];
+    Matrix lastLayertmp = multMatrix(weights2,intermediate);
+    lastLayer = addMatrix(lastLayertmp,bias2);
+    free(lastLayertmp.values);
+    sigmoidify(&lastLayer);
+
+    int toReturn = lastLayer.values[0]>lastLayer.values[1];
+
+    if(!training)
+    {
+        free(weights1.values);
+        free(bias1.values);
+        free(weights2.values);
+        free(bias2.values);
+        free(intermediate.values);
+        free(toEval.values);
+        free(lastLayer.values);
+    }
+    return toReturn; 
     
 }
 
@@ -56,16 +70,13 @@ int eval(int a, int b , int training){
 void train(int n)
 {
     srand(time(NULL));
+    weights1 = _LoadMatrix("OCRmat/weights1.mat");
+    bias1 = _LoadMatrix("OCRmat/bias1.mat");
+    weights2 = _LoadMatrix("OCRmat/weights2.mat");
+    bias2 = _LoadMatrix("OCRmat/bias2.mat");
 
-    _LoadMatrix16("XoRmat/firstWeights.mat",&firstWeights);
-    _LoadMatrix16("XoRmat/firstBias.mat",&firstBias);
-    _LoadMatrix16("XoRmat/secondWeights.mat",&secondWeights);
-    _LoadMatrix16("XoRmat/secondBias.mat",&secondBias);
     
-    
-    Matrix16 ErrorMatrix;
-    ErrorMatrix.x = 2;
-    ErrorMatrix.y = 1;
+    Matrix ErrorMatrix = createMatrix(2,1);
     ErrorMatrix.values[0] = 0.0;
     ErrorMatrix.values[1] = 0.0;
     
@@ -85,20 +96,31 @@ void train(int n)
 		 float TotalError = (error1*error1)/2 + (error2*error2)/2;
 		 
 		 
-	 	 ErrorMatrix.values[getCoordinates16(0,0,ErrorMatrix)] = 
+	 	 ErrorMatrix.values[getCoordinates(0,0,&ErrorMatrix)] = 
              (a != b) - lastLayer.values[0];
-         ErrorMatrix.values[getCoordinates16(1,0,ErrorMatrix)] = 
+         ErrorMatrix.values[getCoordinates(1,0,&ErrorMatrix)] = 
              (a == b) - lastLayer.values[1];
 		 
-         backPropagate(ErrorMatrix,TotalError);	
+         backPropagate(ErrorMatrix,TotalError);
+         free(intermediate.values);
+         free(toEval.values);
+         free(lastLayer.values);
+
     }
+	    
+    _SaveMatrix("OCRmat/weights1.mat",weights1);
+    _SaveMatrix("OCRmat/bias1.mat",bias1);
+    _SaveMatrix("OCRmat/weights2.mat",weights2);
+    _SaveMatrix("OCRmat/bias2.mat",bias2);
 
-		
-    _SaveMatrix16("XoRmat/firstWeights.mat",firstWeights);
-    _SaveMatrix16("XoRmat/firstBias.mat",firstBias);
-    _SaveMatrix16("XoRmat/secondWeights.mat",secondWeights);
-    _SaveMatrix16("XoRmat/secondBias.mat",secondBias);
-
+    free(weights1.values);
+    free(bias1.values);
+    free(weights2.values);
+    free(bias2.values);
+    //free(intermediate.values);
+    //free(toEval.values);
+    //free(lastLayer.values);
+    free(ErrorMatrix.values);
 
 }
 
@@ -107,10 +129,10 @@ void train(int n)
 
 
 float CreationDeltaMatrix(float Error,float ActualOut,
-        float PreviousOut,Matrix16 * DeltaMatrix, int j , float weight)
+        float PreviousOut,Matrix * DeltaMatrix, int j , float weight)
 {
 	float delta = -Error * ActualOut * (1 - ActualOut);
-	DeltaMatrix->values[getCoordinates16(j,0,*DeltaMatrix)] += delta * weight;
+	DeltaMatrix->values[getCoordinates(j,0,DeltaMatrix)] += delta * weight;
 	return delta * PreviousOut * 0.5; 
 }
 
@@ -124,68 +146,66 @@ float DerivativeFormula(float delta, float hidden , float input)
 
 
 
-void backPropagate(Matrix16 ErrorMatrix, float TotalError)
+void backPropagate(Matrix ErrorMatrix, float TotalError)
 {
 
-	Matrix16 DeltaMatrix;
-	DeltaMatrix.x = 4;
-	DeltaMatrix.y = 1;
+	Matrix DeltaMatrix = createMatrix(4,1);
 	for(int i = 0; i < DeltaMatrix.x; i++)
 	{
 		for(int j = 0; j < DeltaMatrix.y;j++)
 		{
-			DeltaMatrix.values[getCoordinates16(i,j,DeltaMatrix)] = 0.0;
+			DeltaMatrix.values[getCoordinates(i,j,&DeltaMatrix)] = 0.0;
 		}
 	}
 
 
-	for(int i = 0; i < secondWeights.x ;i++)
+	for(int i = 0; i < weights2.x ;i++)
 	{
 
 
-		secondBias.values[getCoordinates16(i,0,secondBias)] -= 
+		bias2.values[getCoordinates(i,0,&bias2)] -= 
             DerivativeFormula(
-                    ErrorMatrix.values[getCoordinates16(i,0,ErrorMatrix)] , 
-                    lastLayer.values[getCoordinates16(i,0,lastLayer)] , 
+                    ErrorMatrix.values[getCoordinates(i,0,&ErrorMatrix)] , 
+                    lastLayer.values[getCoordinates(i,0,&lastLayer)] , 
                     1.0) ;
 
  
-		for(int j = 0; j < secondWeights.y; j++)
+		for(int j = 0; j < weights2.y; j++)
 		{
-			secondWeights.values[getCoordinates16(i,j,secondWeights)] -= 
+			weights2.values[getCoordinates(i,j,&weights2)] -= 
                 CreationDeltaMatrix(
-                   ErrorMatrix.values[getCoordinates16(i,0,ErrorMatrix)] , 
-                   lastLayer.values[getCoordinates16(i,0,lastLayer)], 
-                   intermediate.values[getCoordinates16(j,0,intermediate)], 
+                   ErrorMatrix.values[getCoordinates(i,0,&ErrorMatrix)] , 
+                   lastLayer.values[getCoordinates(i,0,&lastLayer)], 
+                   intermediate.values[getCoordinates(j,0,&intermediate)], 
                    &DeltaMatrix , 
                    j , 
-                   secondWeights.values[getCoordinates16(i,j,secondWeights)] );
+                   weights2.values[getCoordinates(i,j,&weights2)] );
 
 		}
 	}
 
 
-	for(int i = 0; i < firstWeights.x;i++)
+	for(int i = 0; i < weights1.x;i++)
 	{
-		firstBias.values[getCoordinates16(i,0,firstBias)] -= 
+		bias1.values[getCoordinates(i,0,&bias1)] -= 
             DerivativeFormula(
-                   DeltaMatrix.values[getCoordinates16(i,0,DeltaMatrix)] ,
-                   intermediate.values[getCoordinates16(i,0,intermediate)] , 
+                   DeltaMatrix.values[getCoordinates(i,0,&DeltaMatrix)] ,
+                   intermediate.values[getCoordinates(i,0,&intermediate)] , 
                    1.0) ;
-
-		for(int j = 0; j < firstWeights.y; j++)
+		for(int j = 0; j < weights1.y; j++)
 		{
-			firstWeights.values[getCoordinates16(i,j,firstWeights)] -= 
+		/*	weights1.values[getCoordinates(i,j,&weights1)] -= 
                 DerivativeFormula(
-                   DeltaMatrix.values[getCoordinates16(i,0,DeltaMatrix)] , 
-                   intermediate.values[getCoordinates16(i,0,intermediate)],
-                   toEval.values[getCoordinates16(j,0,toEval)]) ;
-
+                   DeltaMatrix.values[getCoordinates(i,0,&DeltaMatrix)] , 
+                   intermediate.values[getCoordinates(i,0,&intermediate)],
+                   toEval.values[getCoordinates(j%2,0,&toEval)]
+                   ) ;**/
+            
 		}
 	}
 
 
-
+    free(DeltaMatrix.values);
 
 
 }

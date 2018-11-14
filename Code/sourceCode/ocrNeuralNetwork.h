@@ -14,13 +14,14 @@ Matrix bias2;
 
 Matrix toEval;
 
+
 Matrix intermediate;
 Matrix lastLayer;
 
 void backPropagate(Matrix ErrorMatrix, float TotalError);
 float CreationDeltaMatrix(float Error,float ActualOut,
         float PreviousOut,Matrix * DeltaMatrix, int j , float weight);
-int eval(int a, int b , int training);
+int eval(Matrix toEval , int training);
 void train(int n);
 float CreationDeltaMatrix(float Error,float ActualOut,
         float PreviousOut,Matrix * DeltaMatrix, int j , float weight);
