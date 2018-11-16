@@ -22,7 +22,7 @@ void backPropagate(Matrix ErrorMatrix, float TotalError);
 float CreationDeltaMatrix(float Error,float ActualOut,
         float PreviousOut,Matrix * DeltaMatrix, int j , float weight);
 int eval(Matrix toEval , int training);
-void train(int n);
+void train(Matrix toEval, char trueResult);
 float CreationDeltaMatrix(float Error,float ActualOut,
         float PreviousOut,Matrix * DeltaMatrix, int j , float weight);
 float DerivativeFormula(float delta, float hidden , float input);

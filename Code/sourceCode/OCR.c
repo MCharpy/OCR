@@ -25,7 +25,9 @@ int main(){
     _SaveMatrix("OCRmat/weights2.mat",&weights2);
     _SaveMatrix("OCRmat/bias2.mat",&bias2);
 */
-
+    Matrix toTest = _LoadMatrix("testmat.mat");
+    train(toTest,'a');
+    _SaveMatrix("testmat.mat",&toTest);
 /*
     resetMatrix("OCRmat/weights1.mat",0);
     resetMatrix("OCRmat/bias1.mat",1);

@@ -2,6 +2,7 @@
 #include "BigMatrix.h"
 #include <time.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define RED "\x1B[31m"
 #define GREEN "\x1B[32m"
@@ -22,8 +23,9 @@ Matrix lastLayer;
 void backPropagate(Matrix ErrorMatrix, float TotalError);
 float CreationDeltaMatrix(float Error,float ActualOut,
         float PreviousOut,Matrix * DeltaMatrix, int j , float weight);
+size_t maxValueIndex(Matrix *matrix);
 
-//Evaluates XoR on a and b.
+//Evaluates the OCR on an image Matrix 
 //If training == 0, it loads the Matrix otherwise they already are loaded
 int eval(Matrix toEval, int training){
     
@@ -49,7 +51,8 @@ int eval(Matrix toEval, int training){
     free(lastLayertmp.values);
     sigmoidify(&lastLayer);
 
-    int toReturn = lastLayer.values[0]>lastLayer.values[1];
+
+    int toReturn = maxValueIndex(&lastLayer);
 
     if(!training)
     {
@@ -66,7 +69,7 @@ int eval(Matrix toEval, int training){
 }
 
 //Trains n times the neural network
-void train(int n)
+void train(Matrix toEval, char trueResult)
 {
     srand(time(NULL));
     //alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;i\"'(){}[]!?@$%&-+=";
@@ -78,38 +81,45 @@ void train(int n)
 
     
     Matrix ErrorMatrix = createMatrix(bias2.x,1);
-    for (int i = 0; i<bias2.x; i++)
-        ErrorMatrix.values[i] = 0;
     
 
 
-    for (int i =0 ; i <n ; i++)
+    int result = eval(toEval,1);
+    printf("%i , %lu\n",result ,strlen(alphabet));
+    printf("%c %c\n",alphabet[result],trueResult);
+	printf("%s %c %s pour %c\n",(alphabet[result] == trueResult)?GREEN:RED, alphabet[result],WHITE,trueResult);
+
+
+
+
+    float TotalError = 0;
+    for( size_t i = 0; i< lastLayer.x*lastLayer.y ; i++)
     {
-         int a = rand()%2;
-         int b = rand()%2;
-         int c = rand()%2;
-
-         toEval =  createMatrix(28,28);
-         int result = eval(toEval,1);
-		 printf("%i %i -> %s%i%s\n",a,b,a^b==result?GREEN:RED, result,WHITE);
-
-
-		 float error1 = (a != b) - lastLayer.values[0];
-		 float error2 = (a == b) - lastLayer.values[1];
-		 float TotalError = (error1*error1)/2 + (error2*error2)/2;
-		
-		 
-	 	 ErrorMatrix.values[getCoordinates(0,0,&ErrorMatrix)] = 
-             (a != b) - lastLayer.values[0];
-         ErrorMatrix.values[getCoordinates(1,0,&ErrorMatrix)] = 
-             (a == b) - lastLayer.values[1];
-		 
-         backPropagate(ErrorMatrix,TotalError);
-         free(intermediate.values);
-         free(toEval.values);
-         free(lastLayer.values);
-
+        float errori  = (i != result) - lastLayer.values[i];
+        TotalError += (errori*errori)/2;
+        ErrorMatrix.values[i]= errori;
     }
+
+    
+    backPropagate(ErrorMatrix,TotalError);
+
+/*	float error1 = (a != b) - lastLayer.values[0];
+    
+	float error2 = (a == b) - lastLayer.values[1];
+	float TotalError = (error1*error1)/2 + (error2*error2)/2;
+	
+		 
+	ErrorMatrix.values[getCoordinates(0,0,&ErrorMatrix)] = 
+         (a != b) - lastLayer.values[0];
+    ErrorMatrix.values[getCoordinates(1,0,&ErrorMatrix)] = 
+         (a == b) - lastLayer.values[1];
+		 
+    backPropagate(ErrorMatrix,TotalError);
+*/
+    free(intermediate.values);
+    free(toEval.values);
+    free(lastLayer.values);
+
 	    
     _SaveMatrix("OCRmat/weights1.mat",&weights1);
     _SaveMatrix("OCRmat/bias1.mat",&bias1);
@@ -201,3 +211,15 @@ void backPropagate(Matrix ErrorMatrix, float TotalError)
     free(DeltaMatrix.values);
 }
 
+
+size_t maxValueIndex(Matrix *matrix)
+{
+    size_t maxIndex = 0;
+    for(size_t i = 1; i < matrix->x*matrix->y ; i++)
+    {
+        if(matrix->values[i] > matrix->values[maxIndex])
+            maxIndex = i;
+    }
+
+    return maxIndex;
+}
