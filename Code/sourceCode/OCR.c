@@ -5,7 +5,7 @@
 #include "ocrNeuralNetwork.h"
 #include "BigMatrix.h"
 
-int main(){
+int main(int argc){
     //train(1000);
    
 
@@ -13,26 +13,33 @@ int main(){
     //printf("%s %lu",alphabet,strlen(alphabet));
   
 
-    /*
-     Matrix weights1 = createMatrix(784,355);
+    
+   /*  Matrix weights1 = createMatrix(355,784);
     Matrix bias1 = createMatrix(355,1);
-  Matrix weights2 = createMatrix(355,84);
+  Matrix weights2 = createMatrix(84,355,84);
     Matrix bias2 = createMatrix(84,1);
 
 
     _SaveMatrix("OCRmat/weights1.mat",&weights1);
     _SaveMatrix("OCRmat/bias1.mat",&bias1);
     _SaveMatrix("OCRmat/weights2.mat",&weights2);
-    _SaveMatrix("OCRmat/bias2.mat",&bias2);
-*/
-    Matrix toTest = _LoadMatrix("testmat.mat");
-    train(toTest,'a');
-    _SaveMatrix("testmat.mat",&toTest);
-/*
+    _SaveMatrix("OCRmat/bias2.mat",&bias2);*/
+    
+
+    //resetMatrix("testmat.mat",0);
+    if(argc == 1)
+    {
+        Matrix toTest = _LoadMatrix("testmat.mat");
+        train(&toTest,'a');
+    }
+    else
+    {
+
     resetMatrix("OCRmat/weights1.mat",0);
     resetMatrix("OCRmat/bias1.mat",1);
     resetMatrix("OCRmat/weights2.mat",0);
     resetMatrix("OCRmat/bias2.mat",1);
-*/    
+    }
+   
 }
 

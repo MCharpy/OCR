@@ -37,18 +37,18 @@ int getCoordinates(int x, int y, Matrix *matrix){
 
 //multMatrix returns the product of 2 Matrix
 //      matrix1 and matrix2 are the 2 Matrix to multiply
-Matrix multMatrix(Matrix matrix1, Matrix matrix2){
-    if(matrix1.y != matrix2.x){
+Matrix multMatrix(Matrix *matrix1, Matrix *matrix2){
+    if(matrix1->y != matrix2->x){
         return createMatrix(0,0);
     }
-    Matrix toReturn = createMatrix(matrix1.x,matrix2.y);
+    Matrix toReturn = createMatrix(matrix1->x,matrix2->y);
     
-    for(int m = 0; m < matrix1.x; m++){
-        for(int p=0; p<matrix2.y; p++){
+    for(int m = 0; m < matrix1->x; m++){
+        for(int p=0; p<matrix2->y; p++){
             float sum = 0;
-            for(int k= 0; k < matrix1.y; k++){
-                float inMat1 = matrix1.values[getCoordinates(m,k,&matrix1)];
-                float inMat2 = matrix2.values[getCoordinates(k,p,&matrix2)];
+            for(int k= 0; k < matrix1->y; k++){
+                float inMat1 = matrix1->values[getCoordinates(m,k,matrix1)];
+                float inMat2 = matrix2->values[getCoordinates(k,p,matrix2)];
                 sum += inMat1*inMat2;
             }
             toReturn.values[getCoordinates(m,p,&toReturn)] = sum;
@@ -60,13 +60,13 @@ Matrix multMatrix(Matrix matrix1, Matrix matrix2){
 
 //addMatrix returns the sum of 2 Matrix
 //      matrix1 and matrix2 are the 2 Matrix to add
-Matrix addMatrix(Matrix matrix1, Matrix matrix2){
-    if(matrix1.x != matrix2.x || matrix1.y != matrix2.y){
+Matrix addMatrix(Matrix *matrix1, Matrix *matrix2){
+    if(matrix1->x != matrix2->x || matrix1->y != matrix2->y){
         return createMatrix(0,0); 
     }
-    Matrix toReturn = createMatrix(matrix1.x,matrix1.y);
+    Matrix toReturn = createMatrix(matrix1->x,matrix1->y);
     for (int i = 0; i< toReturn.x*toReturn.y ; i++){
-        toReturn.values[i] = matrix1.values[i]+matrix2.values[i];
+        toReturn.values[i] = matrix1->values[i]+matrix2->values[i];
     }
     return toReturn;
 }

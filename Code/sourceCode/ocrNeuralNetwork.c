@@ -20,7 +20,7 @@ Matrix toEval;
 Matrix intermediate;
 Matrix lastLayer;
 
-void backPropagate(Matrix ErrorMatrix, float TotalError);
+void backPropagate(Matrix *ErrorMatrix, float TotalError);
 float CreationDeltaMatrix(float Error,float ActualOut,
         float PreviousOut,Matrix * DeltaMatrix, int j , float weight);
 size_t maxValueIndex(Matrix *matrix);
@@ -38,16 +38,22 @@ int eval(Matrix toEval, int training){
     }
 
 
+      
 
 
-    Matrix intermediatetmp = multMatrix(weights1,toEval);
-    intermediate = addMatrix(intermediatetmp,bias1);
+    Matrix intermediatetmp = multMatrix(&weights1,&toEval);
+
+
+
+    intermediate = addMatrix(&intermediatetmp,&bias1);
     free(intermediatetmp.values);
 
     sigmoidify(&intermediate);
 
-    Matrix lastLayertmp = multMatrix(weights2,intermediate);
-    lastLayer = addMatrix(lastLayertmp,bias2);
+
+
+    Matrix lastLayertmp = multMatrix(&weights2,&intermediate);
+    lastLayer = addMatrix(&lastLayertmp,&bias2);
     free(lastLayertmp.values);
     sigmoidify(&lastLayer);
 
@@ -69,8 +75,14 @@ int eval(Matrix toEval, int training){
 }
 
 //Trains n times the neural network
-void train(Matrix toEval, char trueResult)
+void train(Matrix *toEvaluate, char trueResult)
 {
+    toEval = createMatrix(toEvaluate->x,toEvaluate->y);
+    for(size_t i = 0 ; i<  toEval.x*toEval.y;i++)
+    {
+        toEval.values[i] = toEvaluate->values[i];
+    }
+
     srand(time(NULL));
     //alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;i\"'(){}[]!?@$%&-+=";
 
@@ -82,11 +94,16 @@ void train(Matrix toEval, char trueResult)
     
     Matrix ErrorMatrix = createMatrix(bias2.x,1);
     
+    int trueResultIndex;
+    for (trueResultIndex= 0; trueResultIndex< strlen(alphabet) && alphabet[trueResultIndex] != trueResult; trueResultIndex++)
+    {
+        printf("Increase tRindex\n");
+    }
 
 
     int result = eval(toEval,1);
-    printf("%i , %lu\n",result ,strlen(alphabet));
-    printf("%c %c\n",alphabet[result],trueResult);
+    //printf("%i , %lu\n",result ,strlen(alphabet));
+    //printf("%c %c\n",alphabet[result],trueResult);
 	printf("%s %c %s pour %c\n",(alphabet[result] == trueResult)?GREEN:RED, alphabet[result],WHITE,trueResult);
 
 
@@ -95,27 +112,15 @@ void train(Matrix toEval, char trueResult)
     float TotalError = 0;
     for( size_t i = 0; i< lastLayer.x*lastLayer.y ; i++)
     {
-        float errori  = (i != result) - lastLayer.values[i];
+        float errori  = (i != trueResultIndex) - lastLayer.values[i];
         TotalError += (errori*errori)/2;
         ErrorMatrix.values[i]= errori;
     }
-
     
-    backPropagate(ErrorMatrix,TotalError);
+    backPropagate(&ErrorMatrix,TotalError);
 
-/*	float error1 = (a != b) - lastLayer.values[0];
-    
-	float error2 = (a == b) - lastLayer.values[1];
-	float TotalError = (error1*error1)/2 + (error2*error2)/2;
-	
-		 
-	ErrorMatrix.values[getCoordinates(0,0,&ErrorMatrix)] = 
-         (a != b) - lastLayer.values[0];
-    ErrorMatrix.values[getCoordinates(1,0,&ErrorMatrix)] = 
-         (a == b) - lastLayer.values[1];
-		 
-    backPropagate(ErrorMatrix,TotalError);
-*/
+    //printMatrix(lastLayer);
+
     free(intermediate.values);
     free(toEval.values);
     free(lastLayer.values);
@@ -130,9 +135,6 @@ void train(Matrix toEval, char trueResult)
     free(bias1.values);
     free(weights2.values);
     free(bias2.values);
-    //free(intermediate.values);
-    //free(toEval.values);
-    //free(lastLayer.values);
     free(ErrorMatrix.values);
 
 }
@@ -159,10 +161,13 @@ float DerivativeFormula(float delta, float hidden , float input)
 
 
 
-void backPropagate(Matrix ErrorMatrix, float TotalError)
+void backPropagate(Matrix *ErrorMatrix, float TotalError)
 {
+    
 	Matrix DeltaMatrix = createMatrix(weights1.x,1);
-	for(int i = 0; i < DeltaMatrix.x; i++)
+	
+    
+    for(int i = 0; i < DeltaMatrix.x; i++)
 	{
 		for(int j = 0; j < DeltaMatrix.y;j++)
 		{
@@ -172,17 +177,32 @@ void backPropagate(Matrix ErrorMatrix, float TotalError)
 
 	for(int i = 0; i < weights2.x ;i++)
 	{
-		bias2.values[getCoordinates(i,0,&bias2)] -= 
+/*		bias2.values[getCoordinates(i,0,&bias2)] -= 
             DerivativeFormula(
-                    ErrorMatrix.values[getCoordinates(i,0,&ErrorMatrix)] , 
+                    ErrorMatrix->values[getCoordinates(i,0,ErrorMatrix)] , 
                     lastLayer.values[getCoordinates(i,0,&lastLayer)] , 
                     1.0) ;
- 
+*/
+        //printMatrix(*ErrorMatrix);
+        float patate = lastLayer.values[getCoordinates(i,0,&lastLayer)];
+
+        bias2.values[getCoordinates(i,0,&bias2)] -= 
+            DerivativeFormula(
+                    ErrorMatrix->values[getCoordinates(i,0,ErrorMatrix)] , 
+                    patate , 
+                    1.0) ;
+/*
+        bias2.values[getCoordinates(i,0,&bias2)] -= 
+            DerivativeFormula(
+                    ErrorMatrix->values[getCoordinates(i,0,ErrorMatrix)]  , 
+                    lastLayer.values[getCoordinates(i,0,&lastLayer)], 
+                    1.0) ;i
+                 */
 		for(int j = 0; j < weights2.y; j++)
 		{
 			weights2.values[getCoordinates(i,j,&weights2)] -= 
                 CreationDeltaMatrix(
-                   ErrorMatrix.values[getCoordinates(i,0,&ErrorMatrix)] , 
+                   ErrorMatrix->values[getCoordinates(i,0,ErrorMatrix)] , 
                    lastLayer.values[getCoordinates(i,0,&lastLayer)], 
                    intermediate.values[getCoordinates(j,0,&intermediate)], 
                    &DeltaMatrix , 
@@ -198,16 +218,20 @@ void backPropagate(Matrix ErrorMatrix, float TotalError)
                    DeltaMatrix.values[getCoordinates(i,0,&DeltaMatrix)] ,
                    intermediate.values[getCoordinates(i,0,&intermediate)] , 
                    1.0) ;
-		for(int j = 0; j < weights1.y; j++)
+		
+           for(int j = 0; j < weights1.y; j++)
 		{
-			weights1.values[getCoordinates(i,j,&weights1)] -= 
+		     weights1.values[getCoordinates(i,j,&weights1)] -= 
                 DerivativeFormula(
                    DeltaMatrix.values[getCoordinates(i,0,&DeltaMatrix)] , 
                    intermediate.values[getCoordinates(i,0,&intermediate)],
-                   toEval.values[getCoordinates(j%2,0,&toEval)]
+                   toEval.values[getCoordinates(j,0,&toEval)]
                    ) ;
 		}
 	}
+
+    
+    
     free(DeltaMatrix.values);
 }
 
