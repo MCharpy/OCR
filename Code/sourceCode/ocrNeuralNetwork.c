@@ -92,31 +92,32 @@ void train(Matrix *toEvaluate, char trueResult)
     bias2 = _LoadMatrix("OCRmat/bias2.mat");
 
     
-    Matrix ErrorMatrix = createMatrix(bias2.x,1);
-    
     int trueResultIndex;
     for (trueResultIndex= 0; trueResultIndex< strlen(alphabet) && alphabet[trueResultIndex] != trueResult; trueResultIndex++)
-    {
-        printf("Increase tRindex\n");
-    }
+    {}
 
 
     int result = eval(toEval,1);
-    //printf("%i , %lu\n",result ,strlen(alphabet));
+    //printf("%i , result \n",result );
     //printf("%c %c\n",alphabet[result],trueResult);
 	printf("%s %c %s pour %c\n",(alphabet[result] == trueResult)?GREEN:RED, alphabet[result],WHITE,trueResult);
 
 
 
 
+
+
+    Matrix ErrorMatrix = createMatrix(lastLayer.x,1);
     float TotalError = 0;
     for( size_t i = 0; i< lastLayer.x*lastLayer.y ; i++)
     {
-        float errori  = (i != trueResultIndex) - lastLayer.values[i];
+        float errori= (i == trueResultIndex)?0.999:0.001 - lastLayer.values[i];
         TotalError += (errori*errori)/2;
         ErrorMatrix.values[i]= errori;
     }
-    
+   
+    //printMatrix(ErrorMatrix);
+    //printMatrix(lastLayer);
     backPropagate(&ErrorMatrix,TotalError);
 
     //printMatrix(lastLayer);
@@ -177,27 +178,13 @@ void backPropagate(Matrix *ErrorMatrix, float TotalError)
 
 	for(int i = 0; i < weights2.x ;i++)
 	{
-/*		bias2.values[getCoordinates(i,0,&bias2)] -= 
-            DerivativeFormula(
-                    ErrorMatrix->values[getCoordinates(i,0,ErrorMatrix)] , 
-                    lastLayer.values[getCoordinates(i,0,&lastLayer)] , 
-                    1.0) ;
-*/
-        //printMatrix(*ErrorMatrix);
-        float patate = lastLayer.values[getCoordinates(i,0,&lastLayer)];
 
         bias2.values[getCoordinates(i,0,&bias2)] -= 
             DerivativeFormula(
                     ErrorMatrix->values[getCoordinates(i,0,ErrorMatrix)] , 
-                    patate , 
-                    1.0) ;
-/*
-        bias2.values[getCoordinates(i,0,&bias2)] -= 
-            DerivativeFormula(
-                    ErrorMatrix->values[getCoordinates(i,0,ErrorMatrix)]  , 
                     lastLayer.values[getCoordinates(i,0,&lastLayer)], 
-                    1.0) ;i
-                 */
+                    1.0) ;
+
 		for(int j = 0; j < weights2.y; j++)
 		{
 			weights2.values[getCoordinates(i,j,&weights2)] -= 

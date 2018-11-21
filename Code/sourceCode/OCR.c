@@ -5,7 +5,7 @@
 #include "ocrNeuralNetwork.h"
 #include "BigMatrix.h"
 
-int main(int argc){
+int main(int argc,char **argv){
     //train(1000);
    
 
@@ -26,7 +26,12 @@ int main(int argc){
     _SaveMatrix("OCRmat/bias2.mat",&bias2);*/
     
 
-    //resetMatrix("testmat.mat",0);
+   /*     Matrix toTest = _LoadMatrix("testmat.mat");
+        for(int i = 0 ; i< toTest.x*toTest.y; i++)
+        {
+            toTest.values[i] = toTest.values[i]<0?-toTest.values[i]:toTest.values[i];
+        }
+        _SaveMatrix("testmat.mat",&toTest);*/
     if(argc == 1)
     {
         Matrix toTest = _LoadMatrix("testmat.mat");
@@ -34,7 +39,7 @@ int main(int argc){
     }
     else
     {
-
+    printf("%s\n",argv[0]);
     resetMatrix("OCRmat/weights1.mat",0);
     resetMatrix("OCRmat/bias1.mat",1);
     resetMatrix("OCRmat/weights2.mat",0);
