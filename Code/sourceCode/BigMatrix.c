@@ -2,6 +2,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <err.h>
+#include <time.h>
 
 
 //structure Matrix is a structure for matrix with a max of 784 number of values
@@ -135,6 +136,7 @@ Matrix _LoadMatrix(char p[])
 
 void resetMatrix(char p[],int bias)
 {
+	srand(time(NULL));
     Matrix toReset = _LoadMatrix(p);
     for (int i =0 ; i< toReset.x*toReset.y;i++)
     {

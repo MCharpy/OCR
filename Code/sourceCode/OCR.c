@@ -26,12 +26,13 @@ int main(int argc,char **argv){
     _SaveMatrix("OCRmat/bias2.mat",&bias2);*/
     
 
-   /*     Matrix toTest = _LoadMatrix("testmat.mat");
+    /*Matrix toTest = _LoadMatrix("testmat.mat");
         for(int i = 0 ; i< toTest.x*toTest.y; i++)
         {
-            toTest.values[i] = toTest.values[i]<0?-toTest.values[i]:toTest.values[i];
+            toTest.values[i] = 1;
         }
-        _SaveMatrix("testmat.mat",&toTest);*/
+        _SaveMatrix("testmat.mat",&toTest);
+*/
     if(argc == 1)
     {
         Matrix toTest = _LoadMatrix("testmat.mat");
