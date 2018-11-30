@@ -437,7 +437,7 @@ void dfs(node* T,int size, int training,char* texxt)
 				SDL_FreeSurface(s);
 			}
 		}
-		if(T->sibling != NULL)
+		if(T->sibling != NULL && T->data )
 			dfs(T->sibling,size,training,text);
 		SDL_FreeSurface(T->data);
 		free(T);
