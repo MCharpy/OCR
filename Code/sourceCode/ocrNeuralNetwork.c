@@ -78,7 +78,7 @@ int eval(Matrix toEval, int training){
 void train(Matrix *toEvaluate, char trueResult)
 {
     toEval = createMatrix(toEvaluate->x,toEvaluate->y);
-    for(size_t i = 0 ; i<  toEval.x*toEval.y;i++)
+    for(int i = 0 ; i<  toEval.x*toEval.y;i++)
     {
         toEval.values[i] = toEvaluate->values[i];
     }
@@ -92,9 +92,9 @@ void train(Matrix *toEvaluate, char trueResult)
     bias2 = _LoadMatrix("OCRmat/bias2.mat");
 
     
-    int trueResultIndex;
+    size_t trueResultIndex;
     for (trueResultIndex= 0; trueResultIndex< strlen(alphabet) && alphabet[trueResultIndex] != trueResult; trueResultIndex++)
-    {}
+    	continue;
 
 
     int result = eval(toEval,1);
@@ -106,18 +106,20 @@ void train(Matrix *toEvaluate, char trueResult)
 
 
 
-
     Matrix ErrorMatrix = createMatrix(lastLayer.x,1);
     float TotalError = 0;
-    for( size_t i = 0; i< lastLayer.x*lastLayer.y ; i++)
+
+    for( int i = 0; i< lastLayer.x*lastLayer.y ; i++)
     {
-        float errori= (i == trueResultIndex)?0.999:0.001 - lastLayer.values[i];
+        float errori = -lastLayer.values[i];
+		errori += i==(int)trueResultIndex;
         TotalError += (errori*errori)/2;
         ErrorMatrix.values[i]= errori;
     }
-   
+
+ 	//printf("%f\n",	weights1.values[getCoordinates(0,1,&weights1)] );
     //printMatrix(ErrorMatrix);
-    //printMatrix(lastLayer);
+	//printMatrix(intermediate);
     backPropagate(&ErrorMatrix,TotalError);
 
     //printMatrix(lastLayer);
@@ -141,62 +143,51 @@ void train(Matrix *toEvaluate, char trueResult)
 }
 
 
-
-
-
-
-
-float CreationDeltaMatrix(float Error,float ActualOut,
-        float PreviousOut,Matrix * DeltaMatrix, int j , float weight)
-{
-	float delta = -Error * ActualOut * (1 - ActualOut);
-	DeltaMatrix->values[getCoordinates(j,0,DeltaMatrix)] += delta * weight;
-	return delta * PreviousOut * 0.5; 
-}
-
-
-
-float DerivativeFormula(float delta, float hidden , float input)
+float DerivativeFormula(float delta, float out,float input)
 
 {
-	return delta * hidden * (1- hidden) * input * 0.5;
+	return -delta * out * (1 - out) * input * 0.5;
 }
 
 
 
 void backPropagate(Matrix *ErrorMatrix, float TotalError)
 {
-    
-	Matrix DeltaMatrix = createMatrix(weights1.x,1);
+    TotalError+=1;
+	Matrix DeltaMatrix = createMatrix(intermediate.x,1);
 	
-    
-    for(int i = 0; i < DeltaMatrix.x; i++)
+	for(int i = 0; i < DeltaMatrix.x; i++)
 	{
-		for(int j = 0; j < DeltaMatrix.y;j++)
+		DeltaMatrix.values[getCoordinates(i,0,&DeltaMatrix)] = 0;
+	}
+    
+    for(int i = 0; i < weights2.x; i++)
+	{
+		for(int j = 0; j < weights2.y;j++)
 		{
-			DeltaMatrix.values[getCoordinates(i,j,&DeltaMatrix)] = 0.0;
+			DeltaMatrix.values[getCoordinates(j,0,&DeltaMatrix)] += ErrorMatrix->values[getCoordinates(i,0,ErrorMatrix)] * 
+																    weights2.values[getCoordinates(i,j,&weights2)];
 		}
 	}
-
+	
+	
 	for(int i = 0; i < weights2.x ;i++)
 	{
-
         bias2.values[getCoordinates(i,0,&bias2)] -= 
             DerivativeFormula(
-                    ErrorMatrix->values[getCoordinates(i,0,ErrorMatrix)] , 
-                    lastLayer.values[getCoordinates(i,0,&lastLayer)], 
-                    1.0) ;
+                    ErrorMatrix->values[getCoordinates(i,0,ErrorMatrix)] ,
+					lastLayer.values[getCoordinates(i,0,&lastLayer)],
+                    1.0);
 
 		for(int j = 0; j < weights2.y; j++)
 		{
+
 			weights2.values[getCoordinates(i,j,&weights2)] -= 
-                CreationDeltaMatrix(
-                   ErrorMatrix->values[getCoordinates(i,0,ErrorMatrix)] , 
-                   lastLayer.values[getCoordinates(i,0,&lastLayer)], 
-                   intermediate.values[getCoordinates(j,0,&intermediate)], 
-                   &DeltaMatrix , 
-                   j , 
-                   weights2.values[getCoordinates(i,j,&weights2)] );
+				DerivativeFormula(
+					ErrorMatrix->values[getCoordinates(i,0,ErrorMatrix)] ,
+					lastLayer.values[getCoordinates(i,0,&lastLayer)],
+					intermediate.values[getCoordinates(j,0,&intermediate)]
+					);
 		}
 	}
 
@@ -206,20 +197,19 @@ void backPropagate(Matrix *ErrorMatrix, float TotalError)
             DerivativeFormula(
                    DeltaMatrix.values[getCoordinates(i,0,&DeltaMatrix)] ,
                    intermediate.values[getCoordinates(i,0,&intermediate)] , 
-                   1.0) ;
-		
-           for(int j = 0; j < weights1.y; j++)
+                   1.0) ;		
+        for(int j = 0; j < weights1.y; j++)
 		{
 		     weights1.values[getCoordinates(i,j,&weights1)] -= 
                 DerivativeFormula(
                    DeltaMatrix.values[getCoordinates(i,0,&DeltaMatrix)] , 
                    intermediate.values[getCoordinates(i,0,&intermediate)],
                    toEval.values[getCoordinates(j,0,&toEval)]
-                   ) ;
+                   );
 		}
 	}
 
-    
+ 
     
     free(DeltaMatrix.values);
 }
@@ -228,7 +218,7 @@ void backPropagate(Matrix *ErrorMatrix, float TotalError)
 size_t maxValueIndex(Matrix *matrix)
 {
     size_t maxIndex = 0;
-    for(size_t i = 1; i < matrix->x*matrix->y ; i++)
+    for(int i = 1; i < matrix->x*matrix->y ; i++)
     {
         if(matrix->values[i] > matrix->values[maxIndex])
             maxIndex = i;

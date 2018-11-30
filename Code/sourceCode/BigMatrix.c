@@ -2,6 +2,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <err.h>
+#include <time.h>
 
 
 //structure Matrix is a structure for matrix with a max of 784 number of values
@@ -32,6 +33,10 @@ Matrix createMatrix(int x,int y){
 //      y is the y coordinate you want
 //      matrix is the Matrix in wich you want a value
 int getCoordinates(int x, int y, Matrix *matrix){
+    if(x>=matrix->x)
+        errx(42,"getCoordinates: x value greater than x matrix size");
+    if(y>=matrix->y)
+        errx(42,"getCoordinates: y value greater than y matrix size");
     return y + x*(matrix->y);
 }
 
@@ -122,7 +127,7 @@ Matrix _LoadMatrix(char p[])
 	int c = strtol(a,NULL,10);
 	fgets(a,15,fp);
 	int d = strtol(a,NULL,10);
-	char s[10] = "";
+	//char s[10] = "";
     Matrix dest = createMatrix(c,d);
     for(int i = 0; i < c*d;i++)
 	{
@@ -135,6 +140,7 @@ Matrix _LoadMatrix(char p[])
 
 void resetMatrix(char p[],int bias)
 {
+	srand(time(NULL));
     Matrix toReset = _LoadMatrix(p);
     for (int i =0 ; i< toReset.x*toReset.y;i++)
     {
