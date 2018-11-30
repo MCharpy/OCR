@@ -1,6 +1,8 @@
 # Prerequisites
 *.d
 
+*.bmpi
+
 # Object files
 *.o
 *.ko
