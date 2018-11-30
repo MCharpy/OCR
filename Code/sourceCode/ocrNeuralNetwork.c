@@ -3,6 +3,8 @@
 #include <time.h>
 #include <stdlib.h>
 #include <string.h>
+#include "image.h"
+#include <SDL.h>
 
 #define RED "\x1B[31m"
 #define GREEN "\x1B[32m"
@@ -74,7 +76,8 @@ int eval(Matrix toEval, int training){
     
 }
 
-//Trains n times the neural network
+//Trains the neural network on the Matrix toEvaluate considering trueResult 
+ //is the result
 void train(Matrix *toEvaluate, char trueResult)
 {
     toEval = createMatrix(toEvaluate->x,toEvaluate->y);
@@ -93,14 +96,15 @@ void train(Matrix *toEvaluate, char trueResult)
 
     
     size_t trueResultIndex;
-    for (trueResultIndex= 0; trueResultIndex< strlen(alphabet) && alphabet[trueResultIndex] != trueResult; trueResultIndex++)
+    for (trueResultIndex= 0; trueResultIndex< strlen(alphabet) 
+            && alphabet[trueResultIndex] != trueResult; trueResultIndex++)
     	continue;
 
 
     int result = eval(toEval,1);
-    //printf("%i , result \n",result );
-    //printf("%c %c\n",alphabet[result],trueResult);
-	printf("%s %c %s pour %c\n",(alphabet[result] == trueResult)?GREEN:RED, alphabet[result],WHITE,trueResult);
+
+	printf("%s %c %s pour %c\n",(alphabet[result] == trueResult)?GREEN:RED,
+            alphabet[result],WHITE,trueResult);
 
 
 
@@ -117,12 +121,9 @@ void train(Matrix *toEvaluate, char trueResult)
         ErrorMatrix.values[i]= errori;
     }
 
- 	//printf("%f\n",	weights1.values[getCoordinates(0,1,&weights1)] );
-    //printMatrix(ErrorMatrix);
-	//printMatrix(intermediate);
+
     backPropagate(&ErrorMatrix,TotalError);
 
-    //printMatrix(lastLayer);
 
     free(intermediate.values);
     free(toEval.values);
@@ -141,6 +142,19 @@ void train(Matrix *toEvaluate, char trueResult)
     free(ErrorMatrix.values);
 
 }
+
+
+void trainImage(char* path, char* text)
+{
+    SDL_Surface* image = SDL_LoadBMP(path);
+    node *T = newNode(0);
+    T->data = copy(image);
+    node *t1 = T;
+    Segment_line(RLSA(copy(image),20,20),copy(image),T,0);
+    dfs(t1,16,1,text);
+    
+}
+
 
 
 float DerivativeFormula(float delta, float out,float input)

@@ -1,49 +1,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <SDL.h>
-#include "SDL_rotozoom.h"
 #include "BigMatrix.h"
+#include "image.h"
+#include "ocrNeuralNetwork.h"
 
-int name =0;
 
-Uint32 getpixel();
-Uint32 putpixel();
-SDL_Surface* colortogray();
-SDL_Surface* blacknwhite();
-void RLSA_height();
-void RLSA_width();
-SDL_Surface* init_state();
-SDL_Surface* copy();
-SDL_Surface* RLSA();
-void extremum();
-void DrawRect();
-void treesation();
-SDL_Surface* extracall();
-void dfs();
-SDL_Surface * contour();
-Matrix Surface_to_Matrix();
-char* path = "test/1.bmp";
 
-typedef struct node node;
-struct node  
-{ 
-    SDL_Surface* data; 
-	int level;
-    struct node *child; 
-    struct node *sibling; 
-}; 
- 
-struct node* newNode(int level) 
-{ 
-	struct node* node = malloc(sizeof(struct node)); 
-	node->data = NULL;
-	node->level = level;
-	node->child = NULL; 
-	node->sibling = NULL; 
-	return node; 
-} 
-void Segment_line();
-int main()
+int vmain()
 {
 /*	int continu = 1;
 	if(SDL_Init(SDL_INIT_VIDEO))
@@ -55,106 +19,13 @@ int main()
 //	SDL_Flip(fenetre);
 
 	SDL_Surface* image = SDL_LoadBMP(path);
-	/*SDL_Surface* clone = copy(image);
- 
-
-
-	node *T = newNode(0);
-	T->data = copy(image);
-	node *t1 = T;
-	Segment_line(RLSA(copy(clone),20,20),copy(image),T,0);
-	dfs(t1,16);*/
+	
 	Matrix m = Surface_to_Matrix(image,16);
 	printMatrix(m);
 	_SaveMatrix("a.map",&m);
 
 	SDL_FreeSurface(image);
-//	SDL_FreeSurface(clone);
-	//SDL_Flip(fenetre);
 
-
-/*	while(continu)
-	{
-		SDL_Event event;
-		SDL_WaitEvent(&event);
-		if(event.type == SDL_QUIT)
-			break;
-		switch(event.type)
-		{
-			case SDL_QUIT:
-				break;
-			case SDL_KEYDOWN:
-				switch(event.key.keysym.sym)
-				{
-					case SDLK_AMPERSAND:
-					{
-						colortogray(fenetre);
-						SDL_Flip(fenetre);
-						break;
-					}
-					case SDLK_QUOTE:
-					{
-						blacknwhite(fenetre);
-						SDL_Flip(fenetre);
-						break;
-					}
-
-					case SDLK_ESCAPE:
-					{
-						continu=0;
-						break;
-					}
-					case SDLK_a:
-					{
-						RLSA_width(fenetre,2);
-						SDL_Flip(fenetre);
-						break;
-					}
-					case SDLK_b:
-					{
-						init_state(fenetre,clone);
-						SDL_Flip(fenetre);
-						break;
-					}
-					case SDLK_z:
-					{
-						RLSA(fenetre,0,5);
-						SDL_Flip(fenetre);
-						break;
-					}
-					case SDLK_e:
-					{
-					//	Segment_line(RLSA(image,1,5),fenetre);
-						SDL_Flip(fenetre);
-						break;
-					}
-					case SDLK_r:
-					{
-						//Segment_line(RLSA(image,10,5),fenetre);
-						SDL_Flip(fenetre);
-						break;
-					
-					}
-					case SDLK_t:
-					{
-							break;
-					}
-					case SDLK_p:
-					{
-					
-						break;
-					}
-
-				    default:
-						break;
-				}
-		}	
-	}				
-	SDL_FreeSurface(fenetre);
-	SDL_FreeSurface(image);
-	SDL_FreeSurface(clone);
-	SDL_Quit();
-	return 0;*/
 	return 0;
 }
 /**
@@ -529,30 +400,31 @@ SDL_Surface* contour(SDL_Surface * surface)
 
 
 
-void dfs(node* T,int size)
+void dfs(node* T,int size, int training,char* text)
 {
 	if(T != NULL)
 	{
-		dfs(T->child,size);
-		name++;
-		char str[12];
-		sprintf(str,"%d.bmp",name);
+		dfs(T->child,size,training,text);
 		if(T->data)
 		{
-			if(T->level != 4)
-				SDL_SaveBMP(blacknwhite(colortogray(T->data)),str);
-			else
+			//if(T->level != 4)
+			//	SDL_SaveBMP(blacknwhite(colortogray(T->data)),str);
+			//else
+            if(T->level == 4 && training)
 			{
 				SDL_Surface *s = SDL_CreateRGBSurface(0,size, size, 32, 0, 0, 0, 0);
 				SDL_Surface * a = contour(blacknwhite(colortogray(T->data)));
 				SDL_SoftStretch(a,NULL,s,NULL);
-				SDL_SaveBMP(s,str);
+			//	SDL_SaveBMP(s,str);
+                Matrix toTrain = Surface_to_Matrix(a,16);
+                train(&toTrain,*text);
+                text++;
 				SDL_FreeSurface(a);
 				SDL_FreeSurface(s);
 			}
 		}
 		if(T->sibling != NULL)
-			dfs(T->sibling,size);
+			dfs(T->sibling,size,training,text);
 		SDL_FreeSurface(T->data);
 		free(T);
 	}
