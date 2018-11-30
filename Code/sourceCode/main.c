@@ -8,7 +8,7 @@
 int main(int argc,char **argv){
     //train(1000);
    
-char* imagePath = "test/1.bmp";
+char* imagePath = "testImage.bmp";
 
     //char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;\"'(){}[]!?@$%&-+=";
     //printf("%s %lu",alphabet,strlen(alphabet));

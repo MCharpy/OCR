@@ -410,10 +410,12 @@ SDL_Surface* contour(SDL_Surface * surface)
 	return s;
 }
 
+char* text;
 
 
-void dfs(node* T,int size, int training,char* text)
+void dfs(node* T,int size, int training,char* texxt)
 {
+    text = texxt;
 	if(T != NULL)
 	{
 		dfs(T->child,size,training,text);

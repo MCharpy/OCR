@@ -5,7 +5,7 @@
 CC = gcc
 
 CPPFLAGS = `pkg-config --cflags sdl` -MMD
-CFLAGS = -Wall -Wextra -std=c99 -O2
+CFLAGS = -Wall -Wextra -std=c99 -g #-O2
 LDFLAGS =
 LDLIBS = -lSDL_image -lSDL_gfx -lm `pkg-config --libs sdl`
 
