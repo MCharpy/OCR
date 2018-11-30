@@ -36,7 +36,7 @@ int main(int argc,char **argv){
     if(argc == 1)
     {
         Matrix toTest = _LoadMatrix("testmat.mat");
-        train(&toTest,'a');
+        train(&toTest,'+');
     }
     else
     {

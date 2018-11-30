@@ -80,7 +80,7 @@ int eval(Matrix toEval, int training){
 void train(Matrix *toEvaluate, char trueResult)
 {
     toEval = createMatrix(toEvaluate->x,toEvaluate->y);
-    for(size_t i = 0 ; i<  toEval.x*toEval.y;i++)
+    for(int i = 0 ; i<  toEval.x*toEval.y;i++)
     {
         toEval.values[i] = toEvaluate->values[i];
     }
@@ -94,7 +94,7 @@ void train(Matrix *toEvaluate, char trueResult)
     bias2 = _LoadMatrix("OCRmat/bias2.mat");
 
     
-    int trueResultIndex;
+    size_t trueResultIndex;
     for (trueResultIndex= 0; trueResultIndex< strlen(alphabet) && alphabet[trueResultIndex] != trueResult; trueResultIndex++)
     	continue;
 
@@ -111,10 +111,10 @@ void train(Matrix *toEvaluate, char trueResult)
     Matrix ErrorMatrix = createMatrix(lastLayer.x,1);
     float TotalError = 0;
 
-    for( size_t i = 0; i< lastLayer.x*lastLayer.y ; i++)
+    for( int i = 0; i< lastLayer.x*lastLayer.y ; i++)
     {
         float errori = -lastLayer.values[i];
-		errori += i==trueResultIndex;
+		errori += i==(int)trueResultIndex;
         TotalError += (errori*errori)/2;
         ErrorMatrix.values[i]= errori;
     }
@@ -155,13 +155,14 @@ void train(Matrix *toEvaluate, char trueResult)
 float DerivativeFormula(float delta, float out,float input)
 
 {
-	return delta * out * (1 - out) * input * 0.5;
+	return -delta * out * (1 - out) * input * 0.5;
 }
 
 
 
 void backPropagate(Matrix *ErrorMatrix, float TotalError)
 {
+    TotalError+=1;
 	Matrix DeltaMatrix = createMatrix(intermediate.x,1);
 	
 	for(int i = 0; i < DeltaMatrix.x; i++)
@@ -226,7 +227,7 @@ void backPropagate(Matrix *ErrorMatrix, float TotalError)
 size_t maxValueIndex(Matrix *matrix)
 {
     size_t maxIndex = 0;
-    for(size_t i = 1; i < matrix->x*matrix->y ; i++)
+    for(int i = 1; i < matrix->x*matrix->y ; i++)
     {
         if(matrix->values[i] > matrix->values[maxIndex])
             maxIndex = i;

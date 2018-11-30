@@ -12,10 +12,10 @@ image.o: ./sourceCode/image.c
 >   gcc -c ./sourceCode/image.c -Wall -Wextra -std=c99 `sdl-config --cflags --libs` 
 
 Matrix.o: ./sourceCode/Matrix.c
->    gcc -c ./sourceCode/Matrix.c 
+>    gcc -c -c -Wall -Wextra -std=c99 ./sourceCode/Matrix.c 
 
 XoR.o: ./sourceCode/XoR.c
->   gcc -c ./sourceCode/XoR.c 
+>   gcc -c -c -Wall -Wextra -std=c99 ./sourceCode/XoR.c 
 
 
 interface.o: ./sourceCode/interface.c ./sourceCode/image.h
@@ -23,10 +23,10 @@ interface.o: ./sourceCode/interface.c ./sourceCode/image.h
 
 
 ocrNeuralNetwork.o: ./sourceCode/ocrNeuralNetwork.c
->   gcc -c ./sourceCode/ocrNeuralNetwork.c 
+>   gcc -c -Wall -Wextra -std=c99 ./sourceCode/ocrNeuralNetwork.c 
 
 BigMatrix.o: ./sourceCode/BigMatrix.c
->    gcc -c ./sourceCode/BigMatrix.c
+>    gcc -c -Wall -Wextra -std=c99 ./sourceCode/BigMatrix.c
 
 
 clean:
