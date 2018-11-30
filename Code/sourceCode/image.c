@@ -34,7 +34,7 @@ void trainImage(char* path, char* text)
     node *T = newNode(0);
     T->data = copy(image);
     node *t1 = T;
-    Segment_line(RLSA(copy(image),20,20),copy(image),T,0);
+    Segment_line(RLSA(copy(image),25,5),copy(image),T,0);
     dfs(t1,16,1,text);
     
 }
@@ -411,7 +411,7 @@ SDL_Surface* contour(SDL_Surface * surface)
 }
 
 char* text;
-
+int name = 0;
 
 void dfs(node* T,int size, int training,char* texxt)
 {
@@ -419,8 +419,11 @@ void dfs(node* T,int size, int training,char* texxt)
 	if(T != NULL)
 	{
 		dfs(T->child,size,training,text);
+		char str[12];
+		sprintf(str,"%d.bmpi",name);
 		if(T->data)
 		{
+			SDL_SaveBMP(T->data,str);
 			//if(T->level != 4)
 			//	SDL_SaveBMP(blacknwhite(colortogray(T->data)),str);
 			//else
@@ -433,11 +436,12 @@ void dfs(node* T,int size, int training,char* texxt)
                 Matrix toTrain = Surface_to_Matrix(a,16);
                 train(&toTrain,*text);
                 text++;
+				name++;
 				SDL_FreeSurface(a);
 				SDL_FreeSurface(s);
 			}
 		}
-		if(T->sibling != NULL && T->data )
+		if(T->sibling != NULL)
 			dfs(T->sibling,size,training,text);
 		SDL_FreeSurface(T->data);
 		free(T);
