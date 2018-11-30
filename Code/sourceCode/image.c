@@ -1,33 +1,45 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <SDL.h>
-#include "BigMatrix.h"
-#include "image.h"
 #include "ocrNeuralNetwork.h"
+#include "node.h"
+#include "BigMatrix.h"
 
 
+void trainImage();
+int process_image(char * path);
+Uint32 getpixel();
+Uint32 putpixel();
+SDL_Surface* colortogray();
+SDL_Surface* blacknwhite();
+void RLSA_height();
+void RLSA_width();
+SDL_Surface* init_state();
+SDL_Surface* copy();
+SDL_Surface* RLSA();
+void extremum();
+void DrawRect();
+void Segment_line();
 
-int vmain()
+void treesation();
+SDL_Surface* extracall();
+void dfs();
+SDL_Surface * contour();
+Matrix Surface_to_Matrix();
+
+
+void trainImage(char* path, char* text)
 {
-/*	int continu = 1;
-	if(SDL_Init(SDL_INIT_VIDEO))
-		fprintf(stderr, "ERROR SDL : %s \n",SDL_GetError());
-	SDL_Surface *fenetre = NULL;*/
-//	fenetre = SDL_SetVideoMode(image->w,image->h,32,SDL_HWSURFACE);
-//	printf("%d,%d",image->w,image->h);
-//	SDL_BlitSurface(image, NULL,fenetre,NULL);
-//	SDL_Flip(fenetre);
-
-	SDL_Surface* image = SDL_LoadBMP(imagePath);
-	
-	Matrix m = Surface_to_Matrix(image,16);
-	printMatrix(m);
-	_SaveMatrix("a.map",&m);
-
-	SDL_FreeSurface(image);
-
-	return 0;
+    SDL_Surface* image = SDL_LoadBMP(path);
+    node *T = newNode(0);
+    T->data = copy(image);
+    node *t1 = T;
+    Segment_line(RLSA(copy(image),20,20),copy(image),T,0);
+    dfs(t1,16,1,text);
+    
 }
+
+
 /**
  * \fn Uint32 putpixel(SDL_Surface *surface,int x,int y,Uint32 pixel)
  * \brief put the pixel on the suface which is in (x,y).

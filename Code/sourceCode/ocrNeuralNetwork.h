@@ -5,7 +5,6 @@
 #include "BigMatrix.h"
 #include <time.h>
 #include <stdlib.h>
-#include "image.h"
 
 #define RED "\x1B[31m"
 #define GREEN "\x1B[32m"

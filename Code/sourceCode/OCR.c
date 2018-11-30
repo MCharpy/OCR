@@ -2,14 +2,15 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
-#include "ocrNeuralNetwork.h"
-#include "BigMatrix.h"
+#include "image.h"
+//#include "BigMatrix.h"
 
 int main(int argc,char **argv){
     //train(1000);
    
+char* imagePath = "test/1.bmp";
 
-    //char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;i\"'(){}[]!?@$%&-+=";
+    //char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;\"'(){}[]!?@$%&-+=";
     //printf("%s %lu",alphabet,strlen(alphabet));
   
 
@@ -35,8 +36,7 @@ int main(int argc,char **argv){
 */
     if(argc == 1)
     {
-        Matrix toTest = _LoadMatrix("testmat.mat");
-        train(&toTest,'+');
+        trainImage(imagePath,"ABCDEFGHIJKLMOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.,'?!+");
     }
     else
     {

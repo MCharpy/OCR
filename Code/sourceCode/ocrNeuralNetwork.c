@@ -3,7 +3,6 @@
 #include <time.h>
 #include <stdlib.h>
 #include <string.h>
-#include "image.h"
 #include <SDL.h>
 
 #define RED "\x1B[31m"
@@ -143,7 +142,7 @@ void train(Matrix *toEvaluate, char trueResult)
 
 }
 
-
+/*
 void trainImage(char* path, char* text)
 {
     SDL_Surface* image = SDL_LoadBMP(path);
@@ -153,7 +152,7 @@ void trainImage(char* path, char* text)
     Segment_line(RLSA(copy(image),20,20),copy(image),T,0);
     dfs(t1,16,1,text);
     
-}
+}*/
 
 
 
