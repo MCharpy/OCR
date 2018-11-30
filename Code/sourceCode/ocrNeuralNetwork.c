@@ -191,7 +191,7 @@ void backPropagate(Matrix *ErrorMatrix, float TotalError)
 		{
 
 			weights2.values[getCoordinates(i,j,&weights2)] -= 
-				Derivativeformula(
+				DerivativeFormula(
 					ErrorMatrix->values[getCoordinates(i,0,ErrorMatrix)] ,
 					lastLayer.values[getCoordinates(i,0,&lastLayer)],
 					intermediate.values[getCoordinates(j,0,&intermediate)]
