@@ -25,6 +25,7 @@ clean:
 >   ${RM} ${OBJ}   # remove object files
 >   ${RM} ${DEP}   # remove dependency files
 >       ${RM} OCR.elf     # remove main program
+>   ${RM} *.bmpi
 
 -include ${DEP}
 
