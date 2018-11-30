@@ -144,6 +144,8 @@ void train(Matrix *toEvaluate, char trueResult)
 
 
 
+
+
 float CreationDeltaMatrix(float Error,float ActualOut,
         float PreviousOut,Matrix * DeltaMatrix, int j , float weight)
 {
