@@ -1,7 +1,11 @@
+#ifndef OCRNEURALNETWORK
+#define OCRNEURALNETWORK
+
 #include <stdio.h>
 #include "BigMatrix.h"
 #include <time.h>
 #include <stdlib.h>
+#include "image.h"
 
 #define RED "\x1B[31m"
 #define GREEN "\x1B[32m"
@@ -26,3 +30,5 @@ void train(Matrix *toEval, char trueResult);
 float CreationDeltaMatrix(float Error,float ActualOut,
         float PreviousOut,Matrix * DeltaMatrix, int j , float weight);
 float DerivativeFormula(float delta, float hidden , float input);
+
+#endif

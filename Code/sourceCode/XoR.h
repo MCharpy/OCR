@@ -1,3 +1,6 @@
+#ifndef Xor
+#define Xor
+
 #include <stdio.h>
 #include "BigMatrix.h"
 #include <time.h>
@@ -26,3 +29,5 @@ float CreationDeltaMatrix(float Error,float ActualOut,
         float PreviousOut,Matrix * DeltaMatrix, int j , float weight);
 float DerivativeFormula(float delta, float hidden , float input);
 void backPropagate(Matrix ErrorMatrix, float TotalError);
+
+#endif

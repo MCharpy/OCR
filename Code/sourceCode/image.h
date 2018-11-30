@@ -1,5 +1,5 @@
-#ifndef IMAGE_H
-#define IMAGE_H
+#ifndef IMAGE
+#define IMAGE
 
 #include <SDL.h>
 
@@ -23,7 +23,7 @@ SDL_Surface* extracall();
 void dfs();
 SDL_Surface * contour();
 Matrix Surface_to_Matrix();
-char* path = "test/1.bmp";
+char* imagePath = "test/1.bmp";
 
 typedef struct node node;
 struct node  

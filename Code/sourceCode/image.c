@@ -18,7 +18,7 @@ int vmain()
 //	SDL_BlitSurface(image, NULL,fenetre,NULL);
 //	SDL_Flip(fenetre);
 
-	SDL_Surface* image = SDL_LoadBMP(path);
+	SDL_Surface* image = SDL_LoadBMP(imagePath);
 	
 	Matrix m = Surface_to_Matrix(image,16);
 	printMatrix(m);
