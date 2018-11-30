@@ -117,7 +117,7 @@ void train(Matrix *toEvaluate, char trueResult)
         float errori = -lastLayer.values[i];
 		errori += i==(int)trueResultIndex;
         TotalError += (errori*errori)/2;
-        ErrorMatrix.values[i]= errori;
+        ErrorMatrix.values[i]= errori/2;
     }
 
 

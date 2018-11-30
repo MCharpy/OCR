@@ -1,10 +1,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <SDL.h>
+#include<err.h>
 #include "ocrNeuralNetwork.h"
 #include "node.h"
 #include "BigMatrix.h"
+#include <stddef.h> 
 
+
+char alpha[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;i\"'(){}[]!?@$%&-+=";
 
 void trainImage();
 int process_image(char * path);
@@ -23,22 +27,36 @@ void Segment_line();
 
 void treesation();
 SDL_Surface* extracall();
-void dfs();
+char * dfs();
 SDL_Surface * contour();
 Matrix Surface_to_Matrix();
 
+char *text;
 
-void trainImage(char* path, char* text)
+void trainImage(char* path, char* texxt)
+{
+	text = texxt;
+    SDL_Surface* image = SDL_LoadBMP(path);
+    node *T = newNode(0);
+    T->data = copy(image);
+    node *t1 = T;
+    Segment_line(RLSA(copy(image),20,20),copy(image),T,0);
+    dfs(t1,16,1);
+	//SDL_FreeSurface(image);
+    
+}
+
+char *evalImage(char *path)
 {
     SDL_Surface* image = SDL_LoadBMP(path);
     node *T = newNode(0);
     T->data = copy(image);
     node *t1 = T;
     Segment_line(RLSA(copy(image),25,5),copy(image),T,0);
-    dfs(t1,16,1,text);
-    
-}
+	text = "\0";
+	return dfs(t1,16,0);
 
+}
 
 /**
  * \fn Uint32 putpixel(SDL_Surface *surface,int x,int y,Uint32 pixel)
@@ -299,7 +317,7 @@ void Segment_line(SDL_Surface* RLSA_surface, SDL_Surface* surface,node* T,
 					if(level ==2)
 					{
 						if(T->data)
-							Segment_line(RLSA(copy(T->data),7,5),copy(T->data),T,level);
+							Segment_line(RLSA(copy(T->data),25,5),copy(T->data),T,level);
 					}
 					if(level ==3)
 					{
@@ -410,51 +428,111 @@ SDL_Surface* contour(SDL_Surface * surface)
 	return s;
 }
 
-char* text;
+
+size_t strlen(const char *s) {
+    size_t i;
+    for (i = 0; s[i] != '\0'; i++) ;
+    return i;
+}
+
+char* concat(char *str1,char * str2)
+{
+	size_t size1 = strlen(str1);
+	size_t size = size1 + strlen(str2) +1;
+	char *str = realloc(str1,size * sizeof(char));
+	char *p = str + size1;
+	while(*str2 != 0)
+		*(p++) = *(str2++);
+	*p = 0;
+	return str;
+}
 int name = 0;
 
-void dfs(node* T,int size, int training,char* texxt)
+char * dfs(node* T,int size, int training)
 {
-    text = texxt;
+	char* str = "";
 	if(T != NULL)
 	{
-		dfs(T->child,size,training,text);
-		char str[12];
-		sprintf(str,"%d.bmpi",name);
-		if(T->data)
+		if(training)
 		{
-			SDL_SaveBMP(T->data,str);
+			dfs(T->child,size,training);
+			char str[12];
+			sprintf(str,"%d.bmpi",name);
+
+			if(T->data)
+			{
+
 			//if(T->level != 4)
 			//	SDL_SaveBMP(blacknwhite(colortogray(T->data)),str);
 			//else
-            if(T->level == 4 && training)
-			{
-				SDL_Surface *s = SDL_CreateRGBSurface(0,size, size, 32, 0, 0, 0, 0);
-				SDL_Surface * a = contour(blacknwhite(colortogray(T->data)));
-				SDL_SoftStretch(a,NULL,s,NULL);
-			//	SDL_SaveBMP(s,str);
-                Matrix toTrain = Surface_to_Matrix(a,16);
-                train(&toTrain,*text);
-                text++;
-				name++;
-				SDL_FreeSurface(a);
-				SDL_FreeSurface(s);
+				if(T->level == 4 && *text!=0 )
+				{
+					SDL_Surface *s = SDL_CreateRGBSurface(0,size, size, 32, 0, 0, 0, 0);
+					SDL_Surface * a = contour(blacknwhite(colortogray(T->data)));
+					SDL_SoftStretch(a,NULL,s,NULL);
+					SDL_SaveBMP(s,str);
+					Matrix toTrain = Surface_to_Matrix(a,size);
+					train(&toTrain,*text);
+					text++;
+					SDL_FreeSurface(a);
+					SDL_FreeSurface(s);
+					name++;
+					free(toTrain.values);
+
+			
+				}
 			}
+			if(T->sibling != NULL)
+				dfs(T->sibling,size,training);
+			if(T->data)
+				SDL_FreeSurface(T->data);
+			free(T);
 		}
-		if(T->sibling != NULL)
-			dfs(T->sibling,size,training,text);
-		SDL_FreeSurface(T->data);
-		free(T);
+
+		else
+		{
+			dfs(T->child,size,training);
+			if(T->data)
+			{
+				if(T->level ==1)
+					str = concat(str,"\n\t");
+				if(T->level ==2)
+					str = concat(str,"\n");
+				if(T->level ==3)
+					str = concat(str," ");
+				if(T->level ==4)
+				{
+					SDL_Surface *s = SDL_CreateRGBSurface(0,size, size, 32, 0, 0, 0, 0);
+					SDL_Surface * a = contour(blacknwhite(colortogray(T->data)));
+					SDL_SoftStretch(a,NULL,s,NULL);
+					Matrix m = Surface_to_Matrix(a,size);
+					char toConcat[2] = "\0";
+					toConcat[0] = alpha[eval(m,0)];
+					str = concat(str,toConcat);
+					SDL_FreeSurface(a);
+					SDL_FreeSurface(s);
+					//free(m.values);
+				}
+			}
+
+
+			if(T->sibling)
+				dfs(T->sibling,size,training);
+			SDL_FreeSurface(T->data);
+			free(T);
+		}
 	}
+
+	return str;
 }
 
 Matrix Surface_to_Matrix(SDL_Surface* surface,int size)
 {
 	Uint8 r,g,b;
 	Matrix m = createMatrix(size*size,1);
-	for(int i=0; i< surface->w;i++)
+	for(int i=0; i< size;i++)
 	{
-		for(int j=0; j<surface->h;j++)
+		for(int j=0; j<size;j++)
 		{
 			SDL_GetRGB(getpixel(surface,i,j),surface->format,&r,&g,&b);
 
