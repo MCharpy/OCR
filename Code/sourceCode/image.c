@@ -1,6 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <SDL.h>
+#include "SDL_rotozoom.h"
+#include "BigMatrix.h"
+
+int name =0;
 
 Uint32 getpixel();
 Uint32 putpixel();
@@ -11,22 +15,65 @@ void RLSA_width();
 SDL_Surface* init_state();
 SDL_Surface* copy();
 SDL_Surface* RLSA();
-SDL_Surface* Segment_line();
 void extremum();
 void DrawRect();
+void treesation();
+SDL_Surface* extracall();
+void dfs();
+SDL_Surface * contour();
+Matrix Surface_to_Matrix();
+char* path = "test/1.bmp";
 
-int process_image(char * path)
+typedef struct node node;
+struct node  
+{ 
+    SDL_Surface* data; 
+	int level;
+    struct node *child; 
+    struct node *sibling; 
+}; 
+ 
+struct node* newNode(int level) 
+{ 
+	struct node* node = malloc(sizeof(struct node)); 
+	node->data = NULL;
+	node->level = level;
+	node->child = NULL; 
+	node->sibling = NULL; 
+	return node; 
+} 
+void Segment_line();
+int main()
 {
-	int continu = 1;
+/*	int continu = 1;
 	if(SDL_Init(SDL_INIT_VIDEO))
 		fprintf(stderr, "ERROR SDL : %s \n",SDL_GetError());
-	SDL_Surface *fenetre = NULL;
+	SDL_Surface *fenetre = NULL;*/
+//	fenetre = SDL_SetVideoMode(image->w,image->h,32,SDL_HWSURFACE);
+//	printf("%d,%d",image->w,image->h);
+//	SDL_BlitSurface(image, NULL,fenetre,NULL);
+//	SDL_Flip(fenetre);
+
 	SDL_Surface* image = SDL_LoadBMP(path);
-	fenetre = SDL_SetVideoMode(image->w,image->h,32,SDL_HWSURFACE);
-	SDL_Surface* clone = copy(path);
-	SDL_BlitSurface(image, NULL,fenetre,NULL);
-	SDL_Flip(fenetre);
-	while(continu)
+	/*SDL_Surface* clone = copy(image);
+ 
+
+
+	node *T = newNode(0);
+	T->data = copy(image);
+	node *t1 = T;
+	Segment_line(RLSA(copy(clone),20,20),copy(image),T,0);
+	dfs(t1,16);*/
+	Matrix m = Surface_to_Matrix(image,16);
+	printMatrix(m);
+	_SaveMatrix("a.map",&m);
+
+	SDL_FreeSurface(image);
+//	SDL_FreeSurface(clone);
+	//SDL_Flip(fenetre);
+
+
+/*	while(continu)
 	{
 		SDL_Event event;
 		SDL_WaitEvent(&event);
@@ -59,7 +106,7 @@ int process_image(char * path)
 					}
 					case SDLK_a:
 					{
-						RLSA_width(fenetre,10);
+						RLSA_width(fenetre,2);
 						SDL_Flip(fenetre);
 						break;
 					}
@@ -71,50 +118,43 @@ int process_image(char * path)
 					}
 					case SDLK_z:
 					{
-						RLSA(fenetre,path,10,5);
+						RLSA(fenetre,0,5);
 						SDL_Flip(fenetre);
 						break;
 					}
 					case SDLK_e:
 					{
-						Segment_line(RLSA(image,path,1,5),fenetre);
+					//	Segment_line(RLSA(image,1,5),fenetre);
 						SDL_Flip(fenetre);
 						break;
 					}
 					case SDLK_r:
 					{
-						Segment_line(RLSA(image,path,10,5),fenetre);
+						//Segment_line(RLSA(image,10,5),fenetre);
 						SDL_Flip(fenetre);
 						break;
 					
 					}
 					case SDLK_t:
 					{
-						Segment_line(RLSA(image,path,25,5),fenetre);
-						SDL_Flip(fenetre);
-						break;
+							break;
 					}
-
-					case SDLK_y:
+					case SDLK_p:
 					{
-						Segment_line(RLSA(image,path,25,20),fenetre);
-						SDL_Flip(fenetre);
+					
 						break;
 					}
-
 
 				    default:
 						break;
 				}
 		}	
 	}				
-
-
-	SDL_FreeSurface(fenetre);	
+	SDL_FreeSurface(fenetre);
 	SDL_FreeSurface(image);
 	SDL_FreeSurface(clone);
 	SDL_Quit();
-	
+	return 0;*/
 	return 0;
 }
 /**
@@ -232,7 +272,7 @@ void RLSA_height(SDL_Surface* surface,int threash)
 		for(int j = 0; surface->h > j;j++)
 		{
 			SDL_GetRGB(getpixel(surface,i,j),surface->format,&r,&g,&b);
-			for(int k = j; r != 0 && k < surface->h;k++)
+			for(int k = j; r != 0 && k < surface->h-1;k++)
 			{		
 				SDL_GetRGB(getpixel(surface,i,k),surface->format,&r,&g,&b);
 				Nth_Zero++;
@@ -241,8 +281,8 @@ void RLSA_height(SDL_Surface* surface,int threash)
 				j += Nth_Zero ;
 			else
 			{
-				for(int l = j - 1; l <= j + Nth_Zero ;l++)
-				{	
+				for(int l = j-1<0?0:j-1 ; l <= j + Nth_Zero && l< surface->h-1;l++)
+				{
 					putpixel(surface,i,l,pixel);
 				}
 				j = j + Nth_Zero ;
@@ -264,7 +304,7 @@ void RLSA_width(SDL_Surface* surface, int threash)
 		for(int j = 0; surface->w > j; j++)
 		{
 			SDL_GetRGB(getpixel(surface,j,i),surface->format,&r,&g,&b);
-			for(int k = j; r != 0 && k < surface->w;k++)
+			for(int k = j; r != 0 && k < surface->w-1;k++)
 			{		
 				SDL_GetRGB(getpixel(surface,k,i),surface->format,&r,&g,&b);
 				Nth_Zero++;
@@ -273,7 +313,7 @@ void RLSA_width(SDL_Surface* surface, int threash)
 				j += Nth_Zero;
  			else
 			{
-				for(int l = j -1; l <= j + Nth_Zero ;l++)
+				for(int l = j-1<0?0:j-1; l <= j + Nth_Zero && l < surface->w-1;l++)
 				{	
 					putpixel(surface,l,i, pixel);
 				}
@@ -298,16 +338,24 @@ SDL_Surface* init_state( SDL_Surface* old_surface, SDL_Surface* new)
 	return old_surface;
 }
 
-SDL_Surface* copy(char* surface)
+SDL_Surface* copy(SDL_Surface* surface)
 {
-	SDL_Surface* c  = SDL_LoadBMP(surface);
-	return c;
+	SDL_Surface* new =   SDL_CreateRGBSurface(0,surface->w, surface->h,32, 0, 0, 0, 0);
+	for(int i = 0;i<surface->w;i++)
+	{
+		for(int j = 0; j<surface->h;j++)
+		{
+			putpixel(new, i , j ,getpixel(surface,i,j));
+		}
+	}
+//	SDL_FreeSurface(surface);
+	return new;
 }
 
-SDL_Surface* RLSA(SDL_Surface* surface,char* image, int threash1, int threash2)
+SDL_Surface* RLSA(SDL_Surface* surface, int threash1, int threash2)
 {
-	SDL_Surface* cp1 = copy(image);
-	SDL_Surface* cp2 = copy(image);
+	SDL_Surface* cp1 =  copy(surface);
+	SDL_Surface* cp2 = copy(surface);
 	RLSA_width(blacknwhite(colortogray(cp1)), threash1);
 	RLSA_height(blacknwhite(colortogray(cp2)), threash2);
 	Uint8 r1,r2,g,b,gg,bb;
@@ -335,10 +383,13 @@ SDL_Surface* RLSA(SDL_Surface* surface,char* image, int threash1, int threash2)
 }
 
 				
-SDL_Surface *Segment_line(SDL_Surface* RLSA_surface, SDL_Surface* surface)
-{
-	Uint8 r1,g1,b1;
-	int* tab = NULL;
+void Segment_line(SDL_Surface* RLSA_surface, SDL_Surface* surface,node* T,
+		int level)
+{	Uint8 r1,g1,b1;
+	int tab[4]={0,0,0,0};
+	level = level+1;
+	T->child = newNode(level);
+	T =T->child;
 	for(int i = 0; i <surface->w; i++)
 	{
 		for(int j = 0; j < surface->h; j++)
@@ -347,20 +398,40 @@ SDL_Surface *Segment_line(SDL_Surface* RLSA_surface, SDL_Surface* surface)
 					RLSA_surface->format,&r1,&g1,&b1);
 			if(r1 == 0)
 			{
-				tab = calloc(sizeof(int),4);
+				tab[3] = 0;
+				tab[1] = 0;
 				tab[2] = j;
 				tab[0] = i;
 				extremum(tab,RLSA_surface,i,j);
-				DrawRect(tab[0], tab[1], tab[2] - 1,tab[2] - 1,surface);
-				DrawRect(tab[0], tab[1], tab[3] + 1,tab[3] + 1,surface);
-				DrawRect(tab[0] - 1 , tab[0] - 1, tab[2] ,tab[3] ,surface);
-				DrawRect(tab[1] + 1, tab[1] + 1,tab[2] ,tab[3] ,surface);
-				free(tab);
-			}
+				SDL_Surface *a = extracall(copy(surface) , tab[0],tab[1],tab[2],tab[3]);
+				if(a != NULL)
+				{
+					if(T->data == NULL)
+						T->data = a;
+					if(level ==1)
+					{
+						if(T->data)
+							Segment_line(RLSA(copy(T->data),25,5),copy(T->data),T,level);
+					}
+					if(level ==2)
+					{
+						if(T->data)
+							Segment_line(RLSA(copy(T->data),7,5),copy(T->data),T,level);
+					}
+					if(level ==3)
+					{
+						if(T->data)
+							Segment_line(RLSA(copy(T->data),0,5),copy(T->data),T,level);
+					}
+					T->sibling = newNode(level);
+					T=T->sibling;
+				}
 
+			}
 		}
 	}
-	return surface;
+	SDL_FreeSurface(RLSA_surface);
+	SDL_FreeSurface(surface);
 }
 
 void extremum(int* tab, SDL_Surface * surface,int i,int j)
@@ -371,16 +442,30 @@ void extremum(int* tab, SDL_Surface * surface,int i,int j)
 	{
 		tab[0] = i	< tab[0] ? i : tab[0];
 		tab[1] = i >= tab[1] ? i : tab[1];
-		tab[2] = j < tab[2] ? j : tab[2];
+		tab[2] = j < tab[2] ? j  : tab[2];
 		tab[3] = j >= tab[3] ? j : tab[3];
 
 		putpixel(surface,i,j,SDL_MapRGB(surface->format,255,255,255));
 		if(i+1<surface->w)
 			extremum(tab, surface,i+1,j);
-		extremum(tab, surface,i-1,j);
+		if(i>0)
+			extremum(tab, surface,i-1,j);
 		if(j+1 < surface->h)
 			extremum(tab, surface,i,j+1);
-		extremum(tab, surface,i,j-1);
+		if(j>0)
+			extremum(tab, surface,i,j-1);
+		if(j>0 && i+1<surface->w)
+			extremum(tab, surface,i+1,j-1);
+		if(i>0 && j+1<surface->h)
+			extremum(tab, surface,i-1,j+1);
+		if(j+1<surface->h && i+1<surface->w)
+			extremum(tab, surface,i+1,j+1);
+		if(j>0 && i>0)
+			extremum(tab, surface,i-1,j-1);
+
+
+
+
 	}
 }
 
@@ -394,4 +479,104 @@ void DrawRect(int x1,int x2,int y1,int y2, SDL_Surface *surface)
 			}
 	}
 }
+
+SDL_Surface* extracall(SDL_Surface* surface,int x1,int x2,int y1, int y2)
+{
+	if(x2-x1 > 0 || y2 - y1 >0)
+	{
+		SDL_Surface* surface2 =  SDL_CreateRGBSurface(0,x2-x1+1, y2-y1+1, 32, 0, 0, 0, 0);
+		for(int i = 0; i <=x2-x1; i++)
+		{
+			for(int j = 0;  j<=y2-y1; j++)
+			{
+				if(i+x1 < surface->w && surface->h> j+y1)
+					putpixel(surface2,i,j,getpixel(surface,i+x1,j+y1));
+				else
+					putpixel(surface2,i,j,SDL_MapRGB(surface->format,255,255,255));
+
+			}
+		}
+		SDL_FreeSurface(surface);
+		return surface2;
+	}
+	SDL_FreeSurface(surface);
+	return NULL;
+}
+
+SDL_Surface* contour(SDL_Surface * surface)
+{
+	SDL_Surface *s = SDL_CreateRGBSurface(0,surface->w+2, surface->h+2, 32, 0, 0, 0, 0);
+	for(int i = 0; i<s->w;i++)
+	{
+		putpixel(s,i,0,SDL_MapRGB(surface->format,255,255,255));
+		putpixel(s,i,s->h-1,SDL_MapRGB(surface->format,255,255,255));
+
+	}
+	for(int i = 0; i<s->h;i++)
+	{
+		putpixel(s,0,i,SDL_MapRGB(surface->format,255,255,255));
+		putpixel(s,s->w-1,i,SDL_MapRGB(surface->format,255,255,255));
+	}
+	for(int i = 0;i<surface->w;i++)
+	{
+		for(int j = 0; j<surface->h;j++)
+		{
+			putpixel(s, i+1 , j+1 ,getpixel(surface,i,j));
+		}
+	}
+	return s;
+}
+
+
+
+void dfs(node* T,int size)
+{
+	if(T != NULL)
+	{
+		dfs(T->child,size);
+		name++;
+		char str[12];
+		sprintf(str,"%d.bmp",name);
+		if(T->data)
+		{
+			if(T->level != 4)
+				SDL_SaveBMP(blacknwhite(colortogray(T->data)),str);
+			else
+			{
+				SDL_Surface *s = SDL_CreateRGBSurface(0,size, size, 32, 0, 0, 0, 0);
+				SDL_Surface * a = contour(blacknwhite(colortogray(T->data)));
+				SDL_SoftStretch(a,NULL,s,NULL);
+				SDL_SaveBMP(s,str);
+				SDL_FreeSurface(a);
+				SDL_FreeSurface(s);
+			}
+		}
+		if(T->sibling != NULL)
+			dfs(T->sibling,size);
+		SDL_FreeSurface(T->data);
+		free(T);
+	}
+}
+
+Matrix Surface_to_Matrix(SDL_Surface* surface,int size)
+{
+	Uint8 r,g,b;
+	Matrix m = createMatrix(size*size,1);
+	for(int i=0; i< surface->w;i++)
+	{
+		for(int j=0; j<surface->h;j++)
+		{
+			SDL_GetRGB(getpixel(surface,i,j),surface->format,&r,&g,&b);
+
+			if(r == 0)
+				m.values[j+i*size] = 0;
+			else
+				m.values[j+i*size] = 1;
+		}
+	}
+	return m;
+}
+
+
+
 

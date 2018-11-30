@@ -143,12 +143,6 @@ void train(Matrix *toEvaluate, char trueResult)
 }
 
 
-
-
-
-
-
-
 float DerivativeFormula(float delta, float out,float input)
 
 {
