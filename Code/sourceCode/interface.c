@@ -1,11 +1,6 @@
 #include "interface.h"
 #include "image.h"
 
-void fin(GtkWidget *widget, gpointer data)
-{
-    gtk_main_quit();
-}
-
 void lancer_OCR(GtkWidget *widget, gpointer data)
 {
     /* Création du dialogue de choix de fichier */
@@ -14,6 +9,7 @@ void lancer_OCR(GtkWidget *widget, gpointer data)
     if(filename != NULL)
     {
         process_image(filename);
+        //recuperer le texte
     }
     else
     {
@@ -25,12 +21,13 @@ void lancer_OCR(GtkWidget *widget, gpointer data)
 void sauvegarde_fichier(GtkWidget *widget, gpointer data)
 {
     gchar *text_to_save;
-    //gchar *filename;
+    gchar *filename;
+    FILE *fp;
     GtkTextIter start;
     GtkTextIter end;
-    //GtkWidget *dialog;
-    //gint res;
-    /*
+    GtkWidget *dialog;
+    gint res;
+    
     dialog = gtk_file_chooser_dialog_new ("Enregistrer Sous",
                                            data.window,
                                            GTK_FILE_CHOOSER_ACTION_SAVE,
@@ -45,18 +42,15 @@ void sauvegarde_fichier(GtkWidget *widget, gpointer data)
     res = gtk_dialog_run (GTK_DIALOG (dialog));
     if (res == GTK_RESPONSE_ACCEPT)
     {
-        char *filename;
-
         filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER(dialog));
-        printf("%s\n",filename);
-        g_free (filename);
     }
-    */
+    
     gtk_text_buffer_get_bounds(data, &start, &end);
     //filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget));
     text_to_save = gtk_text_buffer_get_text(data, &start, &end, FALSE);
-    printf("%s\n",text_to_save);//sauvegarde du texte dans un fichier
-    //g_free(filename);
+    fp = fopen(filename, "w");
+    fprintf(fp, "%s", text_to_save)//sauvegarde du texte dans un fichier
+    g_free(filename);
     g_free(text_to_save);
 }
 
@@ -73,13 +67,19 @@ int interface(int argc, char **argv)
     /* Création de la fenêtre*/
     MainWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL); //definition de la fenêtre
     g_signal_connect(G_OBJECT(MainWindow), "delete-event",
-                     G_CALLBACK(fin), NULL); //on prévoit de recevoir le signal 
+                     G_CALLBACK(gtk_main_quit()), NULL);
+                                             //on prévoit de recevoir le signal 
                                              //de fermeture de la fenêtre
                                              //ce qui appellera la fct "fin"
-    gtk_window_set_title(GTK_WINDOW(MainWindow), "A.S.M.R.: O.C.R"); //titre de 
-                                                                     //la fenêtre
-    gtk_window_set_default_size(GTK_WINDOW(MainWindow), 500, 500); //taille de
+    gtk_window_set_title(GTK_WINDOW(MainWindow), "A.S.M.R.: O.C.R"); //titre de                                                                      //la fenêtre
+    gtk_window_set_default_size(GTK_WINDOW(MainWindow), 1000, 1000); //taille de
                                                                    //la fenêtre
+    
+    /*Création des onglets (GTKNotebook)*/
+    GtkWidget *notebook
+    notebook = gtk_notebook_new();
+    
+
     /* Création de la box */
     GtkWidget *box;
     box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0); //création boite,
