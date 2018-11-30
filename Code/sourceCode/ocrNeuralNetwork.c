@@ -48,10 +48,8 @@ int eval(Matrix toEval, int training){
     intermediate = addMatrix(&intermediatetmp,&bias1);
     free(intermediatetmp.values);
 
-	//printMatrix(intermediate);
     sigmoidify(&intermediate);
 
-	//printMatrix(intermediate);
 
 
     Matrix lastLayertmp = multMatrix(&weights2,&intermediate);
@@ -121,7 +119,6 @@ void train(Matrix *toEvaluate, char trueResult)
 
  	//printf("%f\n",	weights1.values[getCoordinates(0,1,&weights1)] );
     //printMatrix(ErrorMatrix);
-    printMatrix(lastLayer);
 	//printMatrix(intermediate);
     backPropagate(&ErrorMatrix,TotalError);
 
