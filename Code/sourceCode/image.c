@@ -502,7 +502,7 @@ char * dfs(node* T,int size, int training)
 			if(T->data)
 			{
 				if(T->level ==1)
-					str = concat(str,"\n\t");
+					str = concat(str,"\n\n");
 				if(T->level ==2)
 					str = concat(str,"\n");
 				if(T->level ==3)
