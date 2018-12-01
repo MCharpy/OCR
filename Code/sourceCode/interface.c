@@ -12,11 +12,10 @@ void lancer_OCR(GtkWidget *widget, gpointer data)
     if(filename != NULL)
     {
         gtk_label_set_text(run->label, "OCR");
-        /*text = evalimage(filename)*/
-        process_image(filename);
-        /*run->textBuffer.set_text(text)*/
+        text = evalimage(filename)
+        run->textBuffer.set_text(text)
         g_free(filename);
-        //g_free(text);
+        g_free(text);
     }
     else
     {
@@ -42,7 +41,7 @@ void run_train(GtkWidget *widget, gpointer data)
     if(filename != NULL)
     {
         gtk_label_set_text(run->label, "Entraînement");
-        /*train(filename, training_text, spin)*/
+        train(filename, training_text, spin)
     }
     else
     {
