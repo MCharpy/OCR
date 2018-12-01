@@ -26,13 +26,9 @@ clean:
 >   ${RM} ${DEP}   # remove dependency files
 >       ${RM} OCR.elf     # remove main program
 >   ${RM} *.bmpi
+>   ${RM} *.swp
+>   ${RM} *.swo
 
 -include ${DEP}
-<<<<<<< HEAD
 
-# END
-
-=======
-
-# END
->>>>>>> GTK2.2
+#END

@@ -25,7 +25,7 @@ void lancer_OCR(GtkWidget *widget, gpointer data)
     
 }
 
-void train(GtkWidget *widget, gpointer data)
+void run_train(GtkWidget *widget, gpointer data)
 {
     //besoins: loadButton, textBuffer, label
     gchar *filename;
@@ -108,7 +108,7 @@ void update_image(GtkWidget *widget, gpointer data)
     g_free(filename);
 }
 
-int main(int argc, char **argv)
+int interface_main(int argc, char **argv)
 {
     /* Initialisation de GTK+ */
     gtk_init(&argc, &argv);
@@ -220,7 +220,7 @@ int main(int argc, char **argv)
 
     trainButton = gtk_button_new_with_label("Entraînement");
     g_signal_connect(G_OBJECT(trainButton), "clicked",
-                     G_CALLBACK(train), &rundata);
+                     G_CALLBACK(run_train), &rundata);
     
 
     rMatButton = gtk_button_new_with_label("Reinitialiser le Réseau Neuronal");
