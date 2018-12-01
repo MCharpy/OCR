@@ -46,15 +46,21 @@ void trainImage(char* path, char* texxt)
     
 }
 
+char *str;
+
 char *evalImage(char *path)
 {
+
     SDL_Surface* image = SDL_LoadBMP(path);
     node *T = newNode(0);
     T->data = copy(image);
     node *t1 = T;
     Segment_line(RLSA(copy(image),25,5),copy(image),T,0);
 	text = "\0";
-	return dfs(t1,16,0);
+    str = malloc(sizeof(char));
+    *str = 0;
+	dfs(t1,16,0);
+    return str;
 
 }
 
@@ -450,7 +456,8 @@ int name = 0;
 
 char * dfs(node* T,int size, int training)
 {
-	char* str = malloc(sizeof(char));
+//	char* str = malloc(sizeof(char));
+//    *str = ' ';
 	if(T != NULL)
 	{
 		if(training)
