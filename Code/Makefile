@@ -4,12 +4,12 @@
 
 CC = gcc
 
-CPPFLAGS = `pkg-config --cflags sdl` -MMD
+CPPFLAGS = `pkg-config --cflags gtk+-3.0` `pkg-config --cflags sdl` -MMD
 CFLAGS = -Wall -Wextra -std=c99 -g #-O2
 LDFLAGS =
-LDLIBS = -lSDL_image -lSDL_gfx -lm `pkg-config --libs sdl`
+LDLIBS = -lSDL_image -lSDL_gfx -lm `pkg-config --libs gtk+-3.0` `pkg-config --libs sdl`
 
-SRC = sourceCode/main.c sourceCode/BigMatrix.c sourceCode/node.c sourceCode/ocrNeuralNetwork.c sourceCode/image.c
+SRC = sourceCode/main.c sourceCode/BigMatrix.c sourceCode/node.c sourceCode/ocrNeuralNetwork.c sourceCode/image.c sourceCode/interface.c
 
 OBJ = ${SRC:.c=.o}
 DEP = ${SRC:.c=.d}
@@ -30,3 +30,4 @@ clean:
 -include ${DEP}
 
 # END
+
