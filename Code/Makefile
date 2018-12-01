@@ -1,15 +1,32 @@
-.RECIPEPREFIX = > 
- 
+.RECIPEPREFIX = >
 
-interface.o: ./sourceCode/interface.c
->	gcc -Wall -Wextra -std=c99 `pkg-config --cflags gtk+-3.0` ./sourceCode/interface.c -o interface.elf `sdl-config --cflags --libs` `pkg-config --libs gtk+-3.0`
+# Makefile
 
-image.o: ./sourceCode/image.c
->    gcc -c ./sourceCode/image.c -Wall -Wextra -std=c99 `sdl-config --cflags --libs`
+CC = gcc
+
+CPPFLAGS = `pkg-config --cflags gtk+-3.0` `pkg-config --cflags sdl` -MMD
+CFLAGS = -Wall -Wextra -std=c99 -g #-O2
+LDFLAGS =
+LDLIBS = -lSDL_image -lSDL_gfx -lm `pkg-config --libs gtk+-3.0` `pkg-config --libs sdl`
+
+SRC = sourceCode/main.c sourceCode/BigMatrix.c sourceCode/node.c sourceCode/ocrNeuralNetwork.c sourceCode/image.c sourceCode/interface.c
+
+OBJ = ${SRC:.c=.o}
+DEP = ${SRC:.c=.d}
+
+
+all: OCR
+
+OCR: ${OBJ}
+>   ${CC} ${OBJ} ${LDLIBS} -o OCR.elf 
+.PHONY: clean
 
 clean:
->	rm -rf *.o
->	rm -rf *.elf
->	rm -rf .*.swp
->	rm -rf .*.swo
->	rm -rf *.d
+>   ${RM} ${OBJ}   # remove object files
+>   ${RM} ${DEP}   # remove dependency files
+>       ${RM} OCR.elf     # remove main program
+>   ${RM} *.bmpi
+
+-include ${DEP}
+
+# END

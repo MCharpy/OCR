@@ -11,8 +11,10 @@ void lancer_OCR(GtkWidget *widget, gpointer data)
     filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(run->loadButton));
     if(filename != NULL)
     {
-        /*text = lancer l'ocr(filename)*/
-        /***run->textBuffer.set_text(text)*/
+        gtk_label_set_text(run->label, "OCR");
+        /*text = evalimage(filename)*/
+        process_image(filename);
+        /*run->textBuffer.set_text(text)*/
         g_free(filename);
         //g_free(text);
     }
@@ -28,30 +30,35 @@ void train(GtkWidget *widget, gpointer data)
     //besoins: loadButton, textBuffer, label
     gchar *filename;
     gchar *training_text;
+    gint *spin;
     GtkTextIter start;
     GtkTextIter end;
     struct Rundata *run = (struct Rundata *)data;
 
     filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(run->loadButton));
     gtk_text_buffer_get_bounds(run->textBuffer, &start, &end);
-    training_text = gtk_text_buffer_get_text(run->textBuffer, &start, &end, FALSE);
+    training_text = gtk_text_buffer_get_text(run->textBuffer,&start,&end,FALSE);
+    spin = gtk_spin_button_get_value_as_int(run->spinButton);
     if(filename != NULL)
     {
-        /*train(filename, training_text)*/
+        gtk_label_set_text(run->label, "Entraînement");
+        /*train(filename, training_text, spin)*/
     }
     else
     {
         gtk_label_set_text(run->label, "aucun fichier n'a été choisi");
     }
     g_free(filename);
-    free(run);
     g_free(training_text);
 
 }
 
 void reset_matrix(GtkWidget *Widget, gpointer data)
 {
-    //resetMatrices();
+    resetMatrix("./OCRmat/bias1.mat", 1);
+    resetMatrix("./OCRmat/bias2.mat", 1);
+    resetMatrix("./OCRmat/weight1.mat", 0);
+    resetMatrix("./OCRmat/weight2.mat", 0);
 }
 
 void sauvegarde_fichier(GtkWidget *widget, gpointer data)
@@ -171,6 +178,9 @@ int main(int argc, char **argv)
                     G_CALLBACK(update_image),
                     imageTrain);
 
+    /*Création du SpinButton*/
+    GtkSpinButton *spinButton;
+    spinButton = gtk_spin_button_new(gtk_adjustment_new(1,1,1000,1,10,0),1,0);
 
     /* Création d'un cadre de texte */
     GtkWidget *textView;
@@ -193,7 +203,7 @@ int main(int argc, char **argv)
     rundata.textBuffer = textBuffer;
     rundata.loadButton = loadButton;
     rundata.label = label;
-
+    rundata.spinButton = spinButton;
     rundata.mainWindow = MainWindow;
 
     runButton = gtk_button_new_with_label("Commencer");
@@ -234,6 +244,7 @@ int main(int argc, char **argv)
      gtk_notebook_append_page(notebook, hpanedOCR, gtk_label_new("OCR"));
         gtk_container_add(boxTrainl, loadButtonTrain);
         gtk_container_add(boxTrainl, trainButton);
+        gtk_container_add(boxTrainl, spinButton);
         gtk_container_add(boxTrainl, rMatButton);
         gtk_container_add(boxTrainl, labelTrain);
        gtk_paned_pack1(GTK_PANED(vpanedTrainl), boxTrainl, FALSE, FALSE);
@@ -246,7 +257,6 @@ int main(int argc, char **argv)
     /*Affichage et boucle évènementielle */
     gtk_widget_show_all(MainWindow); //afficher 'MainWindow' et ses enfants
     gtk_main(); //boucle évènementielle
-
     /* Fermeture de GTK+ */
     return EXIT_SUCCESS;
 }
