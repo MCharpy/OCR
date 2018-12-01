@@ -8,7 +8,7 @@
 int main(int argc,char **argv){
     //train(1000);
    
-char* imagePath = "testImage.bmp";
+char* imagePath = "lorem.bmp";
 
     //char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;\"'(){}[]!?@$%&-+=";
     //printf("%s %lu",alphabet,strlen(alphabet));
@@ -40,7 +40,8 @@ char* imagePath = "testImage.bmp";
         //trainImage(imagePath,"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrtsuvwxyz.'?!+");
     }
     else if(argc == 2)
-        trainImage(imagePath,"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrtsuvwxyz.'?!+",300);
+//   trainImage(imagePath,"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.'?!+",100);
+		trainImage(imagePath,"Depuislongtemps,j'ailamaniedeglisserdesjeuxdemotslorsdesconversations.Lesgensdemonentouragenepouvantplusmesupporter,jemesuismisalesecrire.",50);
     else
     {
     printf("%s\n",argv[0]);

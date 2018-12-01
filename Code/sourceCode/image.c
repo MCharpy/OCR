@@ -479,13 +479,13 @@ char * dfs(node* T,int size, int training)
 			//if(T->level != 4)
 			//	SDL_SaveBMP(blacknwhite(colortogray(T->data)),str);
 			//else
-				if(T->level == 4 && *text!=0 && T->sibling != NULL )
+				if(T->level == 4 && T->sibling != NULL )
 				{
 					SDL_Surface *s = SDL_CreateRGBSurface(0,size, size, 32, 0, 0, 0, 0);
 					SDL_Surface * a = contour(blacknwhite(colortogray(T->data)));
 					SDL_SoftStretch(a,NULL,s,NULL);
 					SDL_SaveBMP(s,str);
-					Matrix toTrain = Surface_to_Matrix(a,size);
+					Matrix toTrain = Surface_to_Matrix(s,size);
 					train(&toTrain,*text);
 					text++;
 					SDL_FreeSurface(a);
@@ -517,7 +517,7 @@ char * dfs(node* T,int size, int training)
 					SDL_Surface *s = SDL_CreateRGBSurface(0,size, size, 32, 0, 0, 0, 0);
 					SDL_Surface * a = contour(blacknwhite(colortogray(T->data)));
 					SDL_SoftStretch(a,NULL,s,NULL);
-					Matrix m = Surface_to_Matrix(a,size);
+					Matrix m = Surface_to_Matrix(s,size);
 					char toConcat[2] = "\0";
 					toConcat[0] = alpha[eval(m,0)];
 					str = concat(str,toConcat);
