@@ -28,6 +28,11 @@ clean:
 >   ${RM} *.bmpi
 
 -include ${DEP}
+<<<<<<< HEAD
 
 # END
 
+=======
+
+# END
+>>>>>>> GTK2.2

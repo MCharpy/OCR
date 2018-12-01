@@ -1,42 +1,79 @@
 #include "interface.h"
-#include "image.h"
 
-void fin(GtkWidget *widget, gpointer data)
-{
-    gtk_main_quit();
-}
+
 
 void lancer_OCR(GtkWidget *widget, gpointer data)
 {
-    /* Création du dialogue de choix de fichier */
+    //besoins: textbuffer, loadButton, label
     gchar *filename;
-    filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(data));
+    gchar* text;
+    struct Rundata *run = (struct Rundata *)data;
+    filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(run->loadButton));
     if(filename != NULL)
     {
+        gtk_label_set_text(run->label, "OCR");
+        /*text = evalimage(filename)*/
         process_image(filename);
+        /*run->textBuffer.set_text(text)*/
+        g_free(filename);
+        //g_free(text);
     }
     else
     {
-        printf("Aucun fichier n'a été selectionné\n");
+        gtk_label_set_text(run->label, "aucun fichier n'a été choisi");
+    }
+    
+}
+
+void train(GtkWidget *widget, gpointer data)
+{
+    //besoins: loadButton, textBuffer, label
+    gchar *filename;
+    gchar *training_text;
+    gint *spin;
+    GtkTextIter start;
+    GtkTextIter end;
+    struct Rundata *run = (struct Rundata *)data;
+
+    filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(run->loadButton));
+    gtk_text_buffer_get_bounds(run->textBuffer, &start, &end);
+    training_text = gtk_text_buffer_get_text(run->textBuffer,&start,&end,FALSE);
+    spin = gtk_spin_button_get_value_as_int(run->spinButton);
+    if(filename != NULL)
+    {
+        gtk_label_set_text(run->label, "Entraînement");
+        /*train(filename, training_text, spin)*/
+    }
+    else
+    {
+        gtk_label_set_text(run->label, "aucun fichier n'a été choisi");
     }
     g_free(filename);
+    g_free(training_text);
+
+}
+
+void reset_matrix(GtkWidget *Widget, gpointer data)
+{
+    resetMatrix("./OCRmat/bias1.mat", 1);
+    resetMatrix("./OCRmat/bias2.mat", 1);
+    resetMatrix("./OCRmat/weight1.mat", 0);
+    resetMatrix("./OCRmat/weight2.mat", 0);
 }
 
 void sauvegarde_fichier(GtkWidget *widget, gpointer data)
 {
-    gchar *text_to_save;
-    //gchar *filename;
-    GtkTextIter start;
-    GtkTextIter end;
-    //GtkWidget *dialog;
-    //gint res;
-    /*
+    //besoins: MainWindow, textBuffer
+    GtkWidget *dialog;
+    gint res;
+    struct Rundata *run = (struct Rundata *)data;
+
     dialog = gtk_file_chooser_dialog_new ("Enregistrer Sous",
-                                           data.window,
+                                           run->mainWindow,
                                            GTK_FILE_CHOOSER_ACTION_SAVE,
-                                           "_Cancel",
+                                           "_Annuler",
                                            GTK_RESPONSE_CANCEL,
-                                           "_Open",
+                                           "_Enregistrer",
                                            GTK_RESPONSE_ACCEPT,
                                            NULL);
 
@@ -45,125 +82,181 @@ void sauvegarde_fichier(GtkWidget *widget, gpointer data)
     res = gtk_dialog_run (GTK_DIALOG (dialog));
     if (res == GTK_RESPONSE_ACCEPT)
     {
-        char *filename;
+        gchar *filename;
+        gchar *text_to_save;
+        FILE *fp;
+        GtkTextIter start;
+        GtkTextIter end;
 
         filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER(dialog));
-        printf("%s\n",filename);
+        fp = fopen(filename,"w");
+        gtk_text_buffer_get_bounds(run->textBuffer, &start, &end);
+        text_to_save = gtk_text_buffer_get_text(run->textBuffer, &start, &end, FALSE);
+        fprintf(fp,"%s\n",text_to_save);
+        fclose(fp);
         g_free (filename);
+        g_free (text_to_save);
     }
-    */
-    gtk_text_buffer_get_bounds(data, &start, &end);
-    //filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget));
-    text_to_save = gtk_text_buffer_get_text(data, &start, &end, FALSE);
-    printf("%s\n",text_to_save);//sauvegarde du texte dans un fichier
-    //g_free(filename);
-    g_free(text_to_save);
+    gtk_widget_destroy(dialog);
 }
 
-int interface(int argc, char **argv)
+void update_image(GtkWidget *widget, gpointer data)
 {
-    /* Variables */
-    GtkWidget* MainWindow;
-    GtkWidget* label;
-    gchar* TexteLabel;
+    gchar *filename;
+    filename =  gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget));
+    gtk_image_set_from_file(GTK_IMAGE(data), filename);
+    g_free(filename);
+}
 
+int main(int argc, char **argv)
+{
     /* Initialisation de GTK+ */
     gtk_init(&argc, &argv);
 
     /* Création de la fenêtre*/
-    MainWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL); //definition de la fenêtre
+    GtkWidget* MainWindow;
+
+    MainWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     g_signal_connect(G_OBJECT(MainWindow), "delete-event",
-                     G_CALLBACK(fin), NULL); //on prévoit de recevoir le signal 
-                                             //de fermeture de la fenêtre
-                                             //ce qui appellera la fct "fin"
-    gtk_window_set_title(GTK_WINDOW(MainWindow), "A.S.M.R.: O.C.R"); //titre de 
-                                                                     //la fenêtre
-    gtk_window_set_default_size(GTK_WINDOW(MainWindow), 500, 500); //taille de
-                                                                   //la fenêtre
-    /* Création de la box */
-    GtkWidget *box;
-    box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0); //création boite,
-                                                      //orientation horizontale
-                                                      //espacement 0 pixels
-    gtk_container_add(GTK_CONTAINER(MainWindow), box); //ajouter box a la fenêtre
+                     G_CALLBACK(gtk_main_quit), NULL); 
+    //on prévoit de recevoir le signal de fermeture de la fenêtre
+   //ce qui appellera la fct "gtk_main_quit"
+    gtk_window_set_title(GTK_WINDOW(MainWindow), "A.S.M.R.: O.C.R");
+    gtk_window_set_default_size(GTK_WINDOW(MainWindow), 500, 500);
 
-    /*Création du paned widget*/
-    GtkWidget *hpaned;
-    GtkWidget *frame1;
-    GtkWidget *frame2;
-    GtkWidget *frameL;
-    GtkWidget *frameR;
+    /* Création du notebook*/
+    GtkWidget *notebook;
+
+    notebook = gtk_notebook_new();
+    /*Création des paned widgets*/
+    GtkWidget *hpanedOCR;
+    GtkWidget *hpanedTrain;
+    GtkWidget *vpanedOCRl;
+    GtkWidget *vpanedOCRr;
+    GtkWidget *vpanedTrainl;
+    GtkWidget *vpanedTrainr;
     
-    hpaned = gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
-    frameL = gtk_frame_new(NULL);
-    frameR = gtk_frame_new(NULL);
-    frame1 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0); 
-    frame2 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0); 
-    gtk_frame_set_shadow_type(GTK_FRAME (frameL), GTK_SHADOW_IN);
-    gtk_frame_set_shadow_type(GTK_FRAME (frameR), GTK_SHADOW_IN);
+    hpanedOCR = gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
+    hpanedTrain = gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
+    vpanedOCRl = gtk_paned_new(GTK_ORIENTATION_VERTICAL);
+    vpanedOCRr = gtk_paned_new(GTK_ORIENTATION_VERTICAL);
+    vpanedTrainl = gtk_paned_new(GTK_ORIENTATION_VERTICAL);
+    vpanedTrainr = gtk_paned_new(GTK_ORIENTATION_VERTICAL);
 
-    gtk_paned_pack1(GTK_PANED(hpaned), frameL, TRUE, FALSE);
-    gtk_paned_pack2(GTK_PANED (hpaned), frameR, FALSE, FALSE);
-    gtk_widget_set_size_request (frameL, 50, -1);
-    gtk_widget_set_size_request (frameR, 200, 200);
+    /*Création de l'apercu de l'image*/
+    GtkWidget *image;
+    GtkWidget *imageTrain;
 
-    gtk_container_add(GTK_CONTAINER(frameL), frame1);
-    gtk_container_add(GTK_CONTAINER(frameR), frame2);
-    gtk_container_add(GTK_CONTAINER(box), hpaned);
+    image = gtk_image_new_from_file("/home/ajix/Image/diowallpaper.jpg");
+    imageTrain = gtk_image_new_from_icon_name("missing-image", 1);
 
     /*Création du label*/
-    TexteLabel = g_locale_to_utf8("Voici notre OCR", -1, NULL, NULL, NULL); 
-                                                             //générer un texte
-                                                             //qui sera rendu par
-                                                             //pango
-    label = gtk_label_new(TexteLabel); //definition du label avec le texte généré
-    g_free(TexteLabel); //libération de la mémoire
-    gtk_label_set_use_markup(GTK_LABEL(label), TRUE); //on dit qu'on utilise les
-                                                      //balises pango 
-    gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);//centrer le texte
-    gtk_widget_set_size_request (label, -1, 180);
+    GtkWidget *label;
+    GtkWidget *labelTrain;
 
-    gtk_container_add(GTK_CONTAINER(box), label); //ajouter le label à box
+    label = gtk_label_new("OCR"); //definition du label
+    labelTrain = gtk_label_new("Entraînement");
+    gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);
+    gtk_label_set_justify(GTK_LABEL(labelTrain), GTK_JUSTIFY_CENTER);
 
     /* Création du bouton de choix de l'image */
-    GtkWidget *button;
+    GtkWidget *loadButton;
+    GtkWidget *loadButtonTrain;
 
-    button = gtk_file_chooser_button_new ("Choisissez un fichier",
+    loadButton = gtk_file_chooser_button_new ("Choisissez un fichier",
                                           GTK_FILE_CHOOSER_ACTION_OPEN);
-    gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (button),
+    loadButtonTrain = gtk_file_chooser_button_new ("Choisissez un fichier",
+                                          GTK_FILE_CHOOSER_ACTION_OPEN);
+    gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER(loadButton),
                                          ".");
+    gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER(loadButtonTrain),
+                                         ".");
+    g_signal_connect(G_OBJECT(loadButton), "file-set",
+                    G_CALLBACK(update_image),
+                    image);
+    g_signal_connect(G_OBJECT(loadButtonTrain), "file-set",
+                    G_CALLBACK(update_image),
+                    imageTrain);
 
-    gtk_container_add(GTK_CONTAINER(frame1), button); //on ajoute le bouton à
-                                                      //frame1
+    /*Création du SpinButton*/
+    GtkSpinButton *spinButton;
+    spinButton = gtk_spin_button_new(gtk_adjustment_new(1,1,1000,1,10,0),1,0);
+
     /* Création d'un cadre de texte */
     GtkWidget *textView;
+    GtkWidget *textViewTrain;
     GtkTextBuffer *textBuffer;
+    GtkTextBuffer *textBufferTrain;
 
     textBuffer = gtk_text_buffer_new(gtk_text_tag_table_new());
+    textBufferTrain = gtk_text_buffer_new(gtk_text_tag_table_new());
     textView = gtk_text_view_new_with_buffer(textBuffer);
-    gtk_widget_set_size_request (textView, 200, 180);
-    gtk_container_add(GTK_CONTAINER(frame2), textView); 
+    textViewTrain = gtk_text_view_new_with_buffer(textBufferTrain);
 
     /* Création du bouton qui lance l'OCR et du bouton de sauvegarde du texte */
     GtkWidget *runButton;
     GtkWidget *saveButton;
+    GtkWidget *trainButton;
+    GtkWidget *rMatButton;
+
+    struct Rundata rundata;
+    rundata.textBuffer = textBuffer;
+    rundata.loadButton = loadButton;
+    rundata.label = label;
+    rundata.spinButton = spinButton;
+    rundata.mainWindow = MainWindow;
 
     runButton = gtk_button_new_with_label("Commencer");
     g_signal_connect(G_OBJECT(runButton), "clicked",
-                     G_CALLBACK(lancer_OCR), button);
-    saveButton = gtk_button_new_with_label("Enregistrer sous...");
-
-   
-    g_signal_connect(G_OBJECT(saveButton), "clicked",
-                     G_CALLBACK(sauvegarde_fichier), textBuffer); //recevoir le 
-                                                                //signal clicked
-    gtk_container_add(GTK_CONTAINER(frame1), runButton);
-    gtk_container_add(GTK_CONTAINER(frame2), saveButton); 
+                     G_CALLBACK(lancer_OCR), &rundata);
     
+    saveButton = gtk_button_new_with_label("Enregistrer Sous...");
+    g_signal_connect(G_OBJECT(saveButton), "clicked",
+                     G_CALLBACK(sauvegarde_fichier), &rundata);
+    
+    rundata.textBuffer = textBufferTrain;
+    rundata.loadButton = loadButtonTrain;
+    rundata.label = labelTrain;
+
+    trainButton = gtk_button_new_with_label("Entraînement");
+    g_signal_connect(G_OBJECT(trainButton), "clicked",
+                     G_CALLBACK(train), &rundata);
+    
+
+    rMatButton = gtk_button_new_with_label("Reinitialiser le Réseau Neuronal");
+    g_signal_connect(G_OBJECT(rMatButton), "clicked",
+                     G_CALLBACK(reset_matrix), NULL);
+    
+
+    /*Assemblage des composants*/
+    GtkWidget *boxOCRl = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    GtkWidget *boxTrainl = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+
+        gtk_container_add(boxOCRl, loadButton);
+        gtk_container_add(boxOCRl, runButton);
+        gtk_container_add(boxOCRl, label);
+       gtk_paned_pack1(GTK_PANED(vpanedOCRl), boxOCRl, FALSE, FALSE);
+       gtk_paned_pack2(GTK_PANED(vpanedOCRl), image, TRUE, FALSE);
+      gtk_paned_pack1(GTK_PANED(hpanedOCR), vpanedOCRl, TRUE, FALSE);
+       gtk_paned_pack1(GTK_PANED(vpanedOCRr), textView, TRUE, FALSE);
+       gtk_paned_pack2(GTK_PANED(vpanedOCRr), saveButton, FALSE, FALSE);
+      gtk_paned_pack2(GTK_PANED(hpanedOCR), vpanedOCRr, TRUE, FALSE);
+     gtk_notebook_append_page(notebook, hpanedOCR, gtk_label_new("OCR"));
+        gtk_container_add(boxTrainl, loadButtonTrain);
+        gtk_container_add(boxTrainl, trainButton);
+        gtk_container_add(boxTrainl, spinButton);
+        gtk_container_add(boxTrainl, rMatButton);
+        gtk_container_add(boxTrainl, labelTrain);
+       gtk_paned_pack1(GTK_PANED(vpanedTrainl), boxTrainl, FALSE, FALSE);
+       gtk_paned_pack2(GTK_PANED(vpanedTrainl), textViewTrain, TRUE, FALSE);
+      gtk_paned_pack1(GTK_PANED(hpanedTrain), vpanedTrainl, FALSE, FALSE);
+      gtk_paned_pack2(GTK_PANED(hpanedTrain), imageTrain, TRUE, FALSE);
+     gtk_notebook_append_page(notebook, hpanedTrain, gtk_label_new("Train"));
+    gtk_container_add(MainWindow, notebook);
+
     /*Affichage et boucle évènementielle */
     gtk_widget_show_all(MainWindow); //afficher 'MainWindow' et ses enfants
     gtk_main(); //boucle évènementielle
-
     /* Fermeture de GTK+ */
     return EXIT_SUCCESS;
 }
