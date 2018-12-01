@@ -32,8 +32,8 @@ SDL_Surface * contour();
 Matrix Surface_to_Matrix();
 
 char *text;
-
-void trainImage(char* path, char* texxt)
+int name;
+void trainImage(char* path, char* texxt,int n)
 {
 	text = texxt;
     SDL_Surface* image = SDL_LoadBMP(path);
@@ -41,7 +41,14 @@ void trainImage(char* path, char* texxt)
     T->data = copy(image);
     node *t1 = T;
     Segment_line(RLSA(copy(image),20,20),copy(image),T,0);
-    dfs(t1,16,1);
+	char* a = text;
+	for(int i = 0; i<n;i++)
+	{
+		text = a;
+		name = 0;
+		t1 =T;
+		dfs(t1,16,1);
+	}
 	//SDL_FreeSurface(image);
     
 }
@@ -55,7 +62,7 @@ char *evalImage(char *path)
     node *T = newNode(0);
     T->data = copy(image);
     node *t1 = T;
-    Segment_line(RLSA(copy(image),25,5),copy(image),T,0);
+    Segment_line(RLSA(copy(image),25,25),copy(image),T,0);
 	text = "\0";
     str = malloc(sizeof(char));
     *str = 0;
@@ -318,17 +325,17 @@ void Segment_line(SDL_Surface* RLSA_surface, SDL_Surface* surface,node* T,
 					if(level ==1)
 					{
 						if(T->data)
-							Segment_line(RLSA(copy(T->data),25,5),copy(T->data),T,level);
+							Segment_line(RLSA(copy(T->data),30,5),copy(T->data),T,level);
 					}
 					if(level ==2)
 					{
 						if(T->data)
-							Segment_line(RLSA(copy(T->data),25,5),copy(T->data),T,level);
+							Segment_line(RLSA(copy(T->data),7,5),copy(T->data),T,level);
 					}
 					if(level ==3)
 					{
 						if(T->data)
-							Segment_line(RLSA(copy(T->data),0,5),copy(T->data),T,level);
+							Segment_line(RLSA(copy(T->data),0,4),copy(T->data),T,level);
 					}
 					T->sibling = newNode(level);
 					T=T->sibling;
@@ -424,7 +431,7 @@ SDL_Surface* contour(SDL_Surface * surface)
 		putpixel(s,0,i,SDL_MapRGB(surface->format,255,255,255));
 		putpixel(s,s->w-1,i,SDL_MapRGB(surface->format,255,255,255));
 	}
-	for(int i = 0;i<surface->w;i++)
+	for(int i = 0;i<surface->w ;i++)
 	{
 		for(int j = 0; j<surface->h;j++)
 		{
@@ -452,7 +459,7 @@ char* concat(char *str1,char * str2)
 	*p = 0;
 	return str;
 }
-int name = 0;
+
 
 char * dfs(node* T,int size, int training)
 {
@@ -462,17 +469,17 @@ char * dfs(node* T,int size, int training)
 	{
 		if(training)
 		{
-			dfs(T->child,size,training);
 			char str[12];
 			sprintf(str,"%d.bmpi",name);
 
 			if(T->data)
 			{
+				dfs(T->child,size,training);
 
 			//if(T->level != 4)
 			//	SDL_SaveBMP(blacknwhite(colortogray(T->data)),str);
 			//else
-				if(T->level == 4 && *text!=0 )
+				if(T->level == 4 && *text!=0 && T->sibling != NULL )
 				{
 					SDL_Surface *s = SDL_CreateRGBSurface(0,size, size, 32, 0, 0, 0, 0);
 					SDL_Surface * a = contour(blacknwhite(colortogray(T->data)));
@@ -491,23 +498,21 @@ char * dfs(node* T,int size, int training)
 			}
 			if(T->sibling != NULL)
 				dfs(T->sibling,size,training);
-			if(T->data)
-				SDL_FreeSurface(T->data);
-			free(T);
 		}
 
 		else
 		{
-			dfs(T->child,size,training);
 			if(T->data)
 			{
+				dfs(T->child,size,training);
+
 				if(T->level ==1)
 					str = concat(str,"\n\n");
 				if(T->level ==2)
 					str = concat(str,"\n");
 				if(T->level ==3)
 					str = concat(str," ");
-				if(T->level ==4)
+				if(T->level ==4 && T->sibling != NULL)
 				{
 					SDL_Surface *s = SDL_CreateRGBSurface(0,size, size, 32, 0, 0, 0, 0);
 					SDL_Surface * a = contour(blacknwhite(colortogray(T->data)));
@@ -523,10 +528,10 @@ char * dfs(node* T,int size, int training)
 			}
 
 
-			if(T->sibling)
+			if(T->sibling != NULL)
 				dfs(T->sibling,size,training);
 			SDL_FreeSurface(T->data);
-			free(T);
+			//free(T);
 		}
 	}
 
