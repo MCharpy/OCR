@@ -36,9 +36,11 @@ char* imagePath = "testImage.bmp";
 */
     if(argc == 1)
     {
-		printf("%s\n",evalImage(imagePath));
+		printf("%sendoffile\n",evalImage(imagePath));
         //trainImage(imagePath,"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrtsuvwxyz.'?!+");
     }
+    else if(argc == 2)
+        trainImage(imagePath,"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrtsuvwxyz.'?!+");
     else
     {
     printf("%s\n",argv[0]);

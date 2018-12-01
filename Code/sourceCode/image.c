@@ -450,7 +450,7 @@ int name = 0;
 
 char * dfs(node* T,int size, int training)
 {
-	char* str = "";
+	char* str = malloc(sizeof(char));
 	if(T != NULL)
 	{
 		if(training)
