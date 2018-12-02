@@ -32,7 +32,7 @@ void run_train(GtkWidget *widget, gpointer data)
     widget = widget;
     gchar *filename;
     gchar *training_text;
-    gint *spin = 0;
+    gint spin = 0;
     GtkTextIter start;
     GtkTextIter end;
     struct Rundata *run = (struct Rundata *)data;
@@ -40,7 +40,7 @@ void run_train(GtkWidget *widget, gpointer data)
     filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(run->loadButton));
     gtk_text_buffer_get_bounds(run->textBuffer, &start, &end);
     training_text = gtk_text_buffer_get_text(run->textBuffer,&start,&end,FALSE);
-    *spin = gtk_spin_button_get_value_as_int(run->spinButton);
+    spin = gtk_spin_button_get_value_as_int(run->spinButton);
     if(filename != NULL)
     {
         gtk_label_set_text(run->label, "Entraînement");
