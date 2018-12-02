@@ -127,7 +127,7 @@ int interface_main(int argc, char **argv)
     //on prévoit de recevoir le signal de fermeture de la fenêtre
    //ce qui appellera la fct "gtk_main_quit"
     gtk_window_set_title(GTK_WINDOW(MainWindow), "A.S.M.R.: O.C.R");
-    gtk_window_set_default_size(GTK_WINDOW(MainWindow), 500, 500);
+    gtk_window_set_default_size(GTK_WINDOW(MainWindow), 1000, 900);
 
     /* Création du notebook*/
     GtkWidget *notebook;
@@ -182,7 +182,7 @@ int interface_main(int argc, char **argv)
                     imageTrain);
 
     /*Création du SpinButton*/
-    GtkSpinButton *spinButton;
+    GtkWidget *spinButton;
     spinButton = gtk_spin_button_new(gtk_adjustment_new(1,1,1000,1,10,0),1,0);
 
     /* Création d'un cadre de texte */
@@ -193,10 +193,10 @@ int interface_main(int argc, char **argv)
 
     textBufferTrain = gtk_text_buffer_new(gtk_text_tag_table_new());
     textView = gtk_text_view_new();
-    gtk_text_view_set_wrap_mode(textView, GTK_WRAP_WORD);
+    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(textView), GTK_WRAP_WORD_CHAR);
     textBuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textView));
     textViewTrain = gtk_text_view_new_with_buffer(textBufferTrain);
-    gtk_text_view_set_wrap_mode(textViewTrain, GTK_WRAP_WORD);
+    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(textViewTrain), GTK_WRAP_WORD_CHAR);
 
     
     /* Création du bouton qui lance l'OCR et du bouton de sauvegarde du texte */
@@ -209,14 +209,14 @@ int interface_main(int argc, char **argv)
     struct Rundata traindata;
     rundata.textBuffer = textBuffer;
     traindata.textBuffer = textBufferTrain;
-    rundata.loadButton = loadButton;
-    traindata.loadButton = loadButtonTrain;
-    rundata.label = label;
-    traindata.label = labelTrain;
-    rundata.spinButton = spinButton;
-    traindata.spinButton = spinButton;
-    rundata.mainWindow = MainWindow;
-    traindata.mainWindow = MainWindow;
+    rundata.loadButton = GTK_FILE_CHOOSER_BUTTON(loadButton);
+    traindata.loadButton = GTK_FILE_CHOOSER_BUTTON(loadButtonTrain);
+    rundata.label = GTK_LABEL(label);
+    traindata.label = GTK_LABEL(labelTrain);
+    rundata.spinButton = GTK_SPIN_BUTTON(spinButton);
+    traindata.spinButton = GTK_SPIN_BUTTON(spinButton);
+    rundata.mainWindow = GTK_WINDOW(MainWindow);
+    traindata.mainWindow = GTK_WINDOW(MainWindow);
 
     runButton = gtk_button_new_with_label("Commencer");
     g_signal_connect(G_OBJECT(runButton), "clicked",
@@ -240,27 +240,27 @@ int interface_main(int argc, char **argv)
     GtkWidget *boxOCRl = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     GtkWidget *boxTrainl = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 
-        gtk_container_add(boxOCRl, loadButton);
-        gtk_container_add(boxOCRl, runButton);
-        gtk_container_add(boxOCRl, label);
-       gtk_paned_pack1(GTK_PANED(vpanedOCRl), boxOCRl, FALSE, FALSE);
+        gtk_container_add(GTK_CONTAINER(boxOCRl), loadButton);
+        gtk_container_add(GTK_CONTAINER(boxOCRl), runButton);
+        gtk_container_add(GTK_CONTAINER(boxOCRl), label);
+       gtk_paned_pack1(GTK_PANED(vpanedOCRl), boxOCRl, TRUE, TRUE);
        gtk_paned_pack2(GTK_PANED(vpanedOCRl), image, FALSE, TRUE);
-      gtk_paned_pack1(GTK_PANED(hpanedOCR), vpanedOCRl, TRUE, FALSE);
+      gtk_paned_pack1(GTK_PANED(hpanedOCR), vpanedOCRl, FALSE, TRUE);
        gtk_paned_pack1(GTK_PANED(vpanedOCRr), textView, TRUE, FALSE);
        gtk_paned_pack2(GTK_PANED(vpanedOCRr), saveButton, FALSE, FALSE);
-      gtk_paned_pack2(GTK_PANED(hpanedOCR), vpanedOCRr, TRUE, FALSE);
-     gtk_notebook_append_page(notebook, hpanedOCR, gtk_label_new("OCR"));
-        gtk_container_add(boxTrainl, loadButtonTrain);
-        gtk_container_add(boxTrainl, trainButton);
-        gtk_container_add(boxTrainl, spinButton);
-        gtk_container_add(boxTrainl, rMatButton);
-        gtk_container_add(boxTrainl, labelTrain);
-       gtk_paned_pack1(GTK_PANED(vpanedTrainl), boxTrainl, FALSE, FALSE);
+      gtk_paned_pack2(GTK_PANED(hpanedOCR), vpanedOCRr, FALSE, TRUE);
+     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), hpanedOCR, gtk_label_new("OCR"));
+        gtk_container_add(GTK_CONTAINER(boxTrainl), loadButtonTrain);
+        gtk_container_add(GTK_CONTAINER(boxTrainl), trainButton);
+        gtk_container_add(GTK_CONTAINER(boxTrainl), spinButton);
+        gtk_container_add(GTK_CONTAINER(boxTrainl), rMatButton);
+        gtk_container_add(GTK_CONTAINER(boxTrainl), labelTrain);
+       gtk_paned_pack1(GTK_PANED(vpanedTrainl), boxTrainl, FALSE, TRUE);
        gtk_paned_pack2(GTK_PANED(vpanedTrainl), textViewTrain, TRUE, FALSE);
-      gtk_paned_pack1(GTK_PANED(hpanedTrain), vpanedTrainl, FALSE, FALSE);
-      gtk_paned_pack2(GTK_PANED(hpanedTrain), imageTrain, FALSE, TRUE);
-     gtk_notebook_append_page(notebook, hpanedTrain, gtk_label_new("Train"));
-    gtk_container_add(MainWindow, notebook);
+      gtk_paned_pack1(GTK_PANED(hpanedTrain), vpanedTrainl, FALSE, TRUE);
+      gtk_paned_pack2(GTK_PANED(hpanedTrain), imageTrain, TRUE, TRUE);
+     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), hpanedTrain, gtk_label_new("Train"));
+    gtk_container_add(GTK_CONTAINER(MainWindow), notebook);
 
     /*Affichage et boucle évènementielle */
     gtk_widget_show_all(MainWindow); //afficher 'MainWindow' et ses enfants
