@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "image.h"
+#include "interface.h"
 //#include "BigMatrix.h"
 
 int main(int argc,char **argv){
