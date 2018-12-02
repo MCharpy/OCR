@@ -8,7 +8,8 @@
 #include <stddef.h> 
 
 
-char alpha[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;i\"'(){}[]!?@$%&-+=";
+char alpha[] = 
+"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;i\"'(){}[]!?@$%&-+=";
 
 void trainImage();
 int process_image(char * path);
@@ -195,7 +196,8 @@ void RLSA_height(SDL_Surface* surface,int threash)
 				j += Nth_Zero ;
 			else
 			{
-				for(int l = j-1<0?0:j-1 ; l <= j + Nth_Zero && l< surface->h-1;l++)
+				for(int l = j-1<0?0:j-1 ; l <= j + Nth_Zero && 
+						l< surface->h-1;l++)
 				{
 					putpixel(surface,i,l,pixel);
 				}
@@ -227,7 +229,8 @@ void RLSA_width(SDL_Surface* surface, int threash)
 				j += Nth_Zero;
  			else
 			{
-				for(int l = j-1<0?0:j-1; l <= j + Nth_Zero && l < surface->w-1;l++)
+				for(int l = j-1<0?0:j-1; l <= j + Nth_Zero && 
+						l < surface->w-1;l++)
 				{	
 					putpixel(surface,l,i, pixel);
 				}
@@ -254,7 +257,8 @@ SDL_Surface* init_state( SDL_Surface* old_surface, SDL_Surface* new)
 
 SDL_Surface* copy(SDL_Surface* surface)
 {
-	SDL_Surface* new =   SDL_CreateRGBSurface(0,surface->w, surface->h,32, 0, 0, 0, 0);
+	SDL_Surface* new =   SDL_CreateRGBSurface(0,surface->w, 
+			surface->h,32, 0, 0, 0, 0);
 	for(int i = 0;i<surface->w;i++)
 	{
 		for(int j = 0; j<surface->h;j++)
@@ -317,7 +321,8 @@ void Segment_line(SDL_Surface* RLSA_surface, SDL_Surface* surface,node* T,
 				tab[2] = j;
 				tab[0] = i;
 				extremum(tab,RLSA_surface,i,j);
-				SDL_Surface *a = extracall(copy(surface) , tab[0],tab[1],tab[2],tab[3]);
+				SDL_Surface *a = extracall(copy(surface) , tab[0],tab[1],
+						tab[2],tab[3]);
 				if(a != NULL)
 				{
 					if(T->data == NULL)
@@ -325,17 +330,20 @@ void Segment_line(SDL_Surface* RLSA_surface, SDL_Surface* surface,node* T,
 					if(level ==1)
 					{
 						if(T->data)
-							Segment_line(RLSA(copy(T->data),30,5),copy(T->data),T,level);
+							Segment_line(RLSA(copy(T->data),30,5),
+									copy(T->data),T,level);
 					}
 					if(level ==2)
 					{
 						if(T->data)
-							Segment_line(RLSA(copy(T->data),7,5),copy(T->data),T,level);
+							Segment_line(RLSA(copy(T->data),7,5),
+									copy(T->data),T,level);
 					}
 					if(level ==3)
 					{
 						if(T->data)
-							Segment_line(RLSA(copy(T->data),0,4),copy(T->data),T,level);
+							Segment_line(RLSA(copy(T->data),0,4),
+									copy(T->data),T,level);
 					}
 					T->sibling = newNode(level);
 					T=T->sibling;
@@ -398,7 +406,8 @@ SDL_Surface* extracall(SDL_Surface* surface,int x1,int x2,int y1, int y2)
 {
 	if(x2-x1 > 0 || y2 - y1 >0)
 	{
-		SDL_Surface* surface2 =  SDL_CreateRGBSurface(0,x2-x1+1, y2-y1+1, 32, 0, 0, 0, 0);
+		SDL_Surface* surface2 =  SDL_CreateRGBSurface(0,x2-x1+1, y2-y1+1, 32, 0
+				, 0, 0, 0);
 		for(int i = 0; i <=x2-x1; i++)
 		{
 			for(int j = 0;  j<=y2-y1; j++)
@@ -406,7 +415,8 @@ SDL_Surface* extracall(SDL_Surface* surface,int x1,int x2,int y1, int y2)
 				if(i+x1 < surface->w && surface->h> j+y1)
 					putpixel(surface2,i,j,getpixel(surface,i+x1,j+y1));
 				else
-					putpixel(surface2,i,j,SDL_MapRGB(surface->format,255,255,255));
+					putpixel(surface2,i,j,SDL_MapRGB(surface->format,255,255,
+								255));
 
 			}
 		}
@@ -419,7 +429,8 @@ SDL_Surface* extracall(SDL_Surface* surface,int x1,int x2,int y1, int y2)
 
 SDL_Surface* contour(SDL_Surface * surface)
 {
-	SDL_Surface *s = SDL_CreateRGBSurface(0,surface->w+2, surface->h+2, 32, 0, 0, 0, 0);
+	SDL_Surface *s = SDL_CreateRGBSurface(0,surface->w+2, surface->h+2, 32, 0, 
+			0, 0, 0);
 	for(int i = 0; i<s->w;i++)
 	{
 		putpixel(s,i,0,SDL_MapRGB(surface->format,255,255,255));
@@ -481,8 +492,10 @@ char * dfs(node* T,int size, int training)
 			//else
 				if(T->level == 4 && T->sibling != NULL )
 				{
-					SDL_Surface *s = SDL_CreateRGBSurface(0,size, size, 32, 0, 0, 0, 0);
-					SDL_Surface * a = contour(blacknwhite(colortogray(T->data)));
+					SDL_Surface *s = SDL_CreateRGBSurface(0,size, size, 32, 0, 0
+							, 0, 0);
+					SDL_Surface * a = contour(blacknwhite(colortogray(T->data))
+							);
 					SDL_SoftStretch(a,NULL,s,NULL);
 					SDL_SaveBMP(s,str);
 					Matrix toTrain = Surface_to_Matrix(s,size);
@@ -514,8 +527,10 @@ char * dfs(node* T,int size, int training)
 					str = concat(str," ");
 				if(T->level ==4 && T->sibling != NULL)
 				{
-					SDL_Surface *s = SDL_CreateRGBSurface(0,size, size, 32, 0, 0, 0, 0);
-					SDL_Surface * a = contour(blacknwhite(colortogray(T->data)));
+					SDL_Surface *s = SDL_CreateRGBSurface(0,size, size, 32, 0, 
+							0, 0, 0);
+					SDL_Surface * a = contour(blacknwhite(colortogray(T->data)
+								));
 					SDL_SoftStretch(a,NULL,s,NULL);
 					Matrix m = Surface_to_Matrix(s,size);
 					char toConcat[2] = "\0";
