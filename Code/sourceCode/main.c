@@ -37,11 +37,14 @@ char* imagePath = "lorem.bmp";
 */
     if(argc == 1)
     {
-        printf("%s\n",evalImage(imagePath));
+       // printf("%s\n",evalImage(imagePath));
         interface_main(0, NULL);
         //trainImage(imagePath,"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrtsuvwxyz.'?!+");
     }
     else if(argc == 2)
+        printf("%s",evalImage(imagePath));
+		
+    else if(argc == 3)
 //   trainImage(imagePath,"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.'?!+",100);
 		trainImage(imagePath,"Depuislongtemps,j'ailamaniedeglisserdesjeuxdemotslorsdesconversations.Lesgensdemonentouragenepouvantplusmesupporter,jemesuismisalesecrire.",50);
     else
