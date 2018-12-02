@@ -4,7 +4,7 @@
     #include <gtk/gtk.h>
     #include "image.h"
     #include "BigMatrix.h"
-    int interface(int argc, char **argv);
+    int interface_main(int argc, char **argv);
     struct Rundata
     {
         GtkTextBuffer *textBuffer;

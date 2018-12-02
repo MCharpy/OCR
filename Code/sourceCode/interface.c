@@ -12,8 +12,8 @@ void lancer_OCR(GtkWidget *widget, gpointer data)
     if(filename != NULL)
     {
         gtk_label_set_text(run->label, "OCR");
-        text = evalimage(filename)
-        run->textBuffer.set_text(text)
+        text = evalImage(filename);
+        gtk_text_buffer_set_text(GTK_TEXT_BUFFER(run->textBuffer), "test constant nooo", -1);
         g_free(filename);
         g_free(text);
     }
@@ -41,7 +41,7 @@ void run_train(GtkWidget *widget, gpointer data)
     if(filename != NULL)
     {
         gtk_label_set_text(run->label, "Entraînement");
-        train(filename, training_text, spin)
+        trainImage(filename, training_text, spin);
     }
     else
     {
@@ -187,11 +187,12 @@ int interface_main(int argc, char **argv)
     GtkTextBuffer *textBuffer;
     GtkTextBuffer *textBufferTrain;
 
-    textBuffer = gtk_text_buffer_new(gtk_text_tag_table_new());
     textBufferTrain = gtk_text_buffer_new(gtk_text_tag_table_new());
-    textView = gtk_text_view_new_with_buffer(textBuffer);
-    textViewTrain = gtk_text_view_new_with_buffer(textBufferTrain);
+    textView = gtk_text_view_new();
 
+    textBuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textView));
+    textViewTrain = gtk_text_view_new_with_buffer(textBufferTrain);
+    gtk_text_buffer_set_text(textBuffer, "Te main st", -1);
     /* Création du bouton qui lance l'OCR et du bouton de sauvegarde du texte */
     GtkWidget *runButton;
     GtkWidget *saveButton;

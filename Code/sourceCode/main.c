@@ -36,7 +36,8 @@ char* imagePath = "lorem.bmp";
 */
     if(argc == 1)
     {
-		printf("%s\n",evalImage(imagePath));
+        printf("%s\n",evalImage(imagePath));
+        interface_main(0, NULL);
         //trainImage(imagePath,"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrtsuvwxyz.'?!+");
     }
     else if(argc == 2)
