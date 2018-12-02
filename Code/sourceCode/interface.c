@@ -13,7 +13,8 @@ void lancer_OCR(GtkWidget *widget, gpointer data)
     {
         gtk_label_set_text(run->label, "OCR");
         text = evalImage(filename);
-        gtk_text_buffer_set_text(GTK_TEXT_BUFFER(run->textBuffer), "test constant nooo", -1);
+        gtk_text_buffer_set_text(GTK_TEXT_BUFFER(run->textBuffer), text, -1);
+        printf("%s\n", text);
         g_free(filename);
         g_free(text);
     }
@@ -200,11 +201,17 @@ int interface_main(int argc, char **argv)
     GtkWidget *rMatButton;
 
     struct Rundata rundata;
+    struct Rundata traindata;
     rundata.textBuffer = textBuffer;
+    traindata.textBuffer = textBufferTrain;
     rundata.loadButton = loadButton;
+    traindata.loadButton = loadButtonTrain;
     rundata.label = label;
+    traindata.label = labelTrain;
     rundata.spinButton = spinButton;
+    traindata.spinButton = spinButton;
     rundata.mainWindow = MainWindow;
+    traindata.mainWindow = MainWindow;
 
     runButton = gtk_button_new_with_label("Commencer");
     g_signal_connect(G_OBJECT(runButton), "clicked",
@@ -214,13 +221,10 @@ int interface_main(int argc, char **argv)
     g_signal_connect(G_OBJECT(saveButton), "clicked",
                      G_CALLBACK(sauvegarde_fichier), &rundata);
     
-    rundata.textBuffer = textBufferTrain;
-    rundata.loadButton = loadButtonTrain;
-    rundata.label = labelTrain;
 
     trainButton = gtk_button_new_with_label("Entraînement");
     g_signal_connect(G_OBJECT(trainButton), "clicked",
-                     G_CALLBACK(run_train), &rundata);
+                     G_CALLBACK(run_train), &traindata);
     
 
     rMatButton = gtk_button_new_with_label("Reinitialiser le Réseau Neuronal");
