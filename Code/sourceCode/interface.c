@@ -5,6 +5,7 @@
 void lancer_OCR(GtkWidget *widget, gpointer data)
 {
     //besoins: textbuffer, loadButton, label
+    widget = widget;
     gchar *filename;
     gchar* text;
     struct Rundata *run = (struct Rundata *)data;
@@ -28,9 +29,10 @@ void lancer_OCR(GtkWidget *widget, gpointer data)
 void run_train(GtkWidget *widget, gpointer data)
 {
     //besoins: loadButton, textBuffer, label
+    widget = widget;
     gchar *filename;
     gchar *training_text;
-    gint *spin;
+    gint *spin = 0;
     GtkTextIter start;
     GtkTextIter end;
     struct Rundata *run = (struct Rundata *)data;
@@ -38,7 +40,7 @@ void run_train(GtkWidget *widget, gpointer data)
     filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(run->loadButton));
     gtk_text_buffer_get_bounds(run->textBuffer, &start, &end);
     training_text = gtk_text_buffer_get_text(run->textBuffer,&start,&end,FALSE);
-    spin = gtk_spin_button_get_value_as_int(run->spinButton);
+    *spin = gtk_spin_button_get_value_as_int(run->spinButton);
     if(filename != NULL)
     {
         gtk_label_set_text(run->label, "Entraînement");
@@ -53,17 +55,20 @@ void run_train(GtkWidget *widget, gpointer data)
 
 }
 
-void reset_matrix(GtkWidget *Widget, gpointer data)
+void reset_matrix(GtkWidget *widget, gpointer data)
 {
+    widget = widget;
+    data = data;
     resetMatrix("./OCRmat/bias1.mat", 1);
     resetMatrix("./OCRmat/bias2.mat", 1);
-    resetMatrix("./OCRmat/weight1.mat", 0);
-    resetMatrix("./OCRmat/weight2.mat", 0);
+    resetMatrix("./OCRmat/weights1.mat", 0);
+    resetMatrix("./OCRmat/weights2.mat", 0);
 }
 
 void sauvegarde_fichier(GtkWidget *widget, gpointer data)
 {
     //besoins: MainWindow, textBuffer
+    widget = widget;
     GtkWidget *dialog;
     gint res;
     struct Rundata *run = (struct Rundata *)data;
@@ -134,21 +139,19 @@ int interface_main(int argc, char **argv)
     GtkWidget *vpanedOCRl;
     GtkWidget *vpanedOCRr;
     GtkWidget *vpanedTrainl;
-    GtkWidget *vpanedTrainr;
     
     hpanedOCR = gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
     hpanedTrain = gtk_paned_new(GTK_ORIENTATION_HORIZONTAL);
     vpanedOCRl = gtk_paned_new(GTK_ORIENTATION_VERTICAL);
     vpanedOCRr = gtk_paned_new(GTK_ORIENTATION_VERTICAL);
     vpanedTrainl = gtk_paned_new(GTK_ORIENTATION_VERTICAL);
-    vpanedTrainr = gtk_paned_new(GTK_ORIENTATION_VERTICAL);
 
     /*Création de l'apercu de l'image*/
     GtkWidget *image;
     GtkWidget *imageTrain;
 
-    image = gtk_image_new_from_file("/home/ajix/Image/diowallpaper.jpg");
-    imageTrain = gtk_image_new_from_icon_name("missing-image", 1);
+    image = gtk_image_new();
+    imageTrain = gtk_image_new();
 
     /*Création du label*/
     GtkWidget *label;
@@ -190,10 +193,12 @@ int interface_main(int argc, char **argv)
 
     textBufferTrain = gtk_text_buffer_new(gtk_text_tag_table_new());
     textView = gtk_text_view_new();
-
+    gtk_text_view_set_wrap_mode(textView, GTK_WRAP_WORD);
     textBuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textView));
     textViewTrain = gtk_text_view_new_with_buffer(textBufferTrain);
-    gtk_text_buffer_set_text(textBuffer, "Te main st", -1);
+    gtk_text_view_set_wrap_mode(textViewTrain, GTK_WRAP_WORD);
+
+    
     /* Création du bouton qui lance l'OCR et du bouton de sauvegarde du texte */
     GtkWidget *runButton;
     GtkWidget *saveButton;
@@ -230,7 +235,6 @@ int interface_main(int argc, char **argv)
     rMatButton = gtk_button_new_with_label("Reinitialiser le Réseau Neuronal");
     g_signal_connect(G_OBJECT(rMatButton), "clicked",
                      G_CALLBACK(reset_matrix), NULL);
-    
 
     /*Assemblage des composants*/
     GtkWidget *boxOCRl = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
@@ -240,7 +244,7 @@ int interface_main(int argc, char **argv)
         gtk_container_add(boxOCRl, runButton);
         gtk_container_add(boxOCRl, label);
        gtk_paned_pack1(GTK_PANED(vpanedOCRl), boxOCRl, FALSE, FALSE);
-       gtk_paned_pack2(GTK_PANED(vpanedOCRl), image, TRUE, FALSE);
+       gtk_paned_pack2(GTK_PANED(vpanedOCRl), image, FALSE, TRUE);
       gtk_paned_pack1(GTK_PANED(hpanedOCR), vpanedOCRl, TRUE, FALSE);
        gtk_paned_pack1(GTK_PANED(vpanedOCRr), textView, TRUE, FALSE);
        gtk_paned_pack2(GTK_PANED(vpanedOCRr), saveButton, FALSE, FALSE);
@@ -254,7 +258,7 @@ int interface_main(int argc, char **argv)
        gtk_paned_pack1(GTK_PANED(vpanedTrainl), boxTrainl, FALSE, FALSE);
        gtk_paned_pack2(GTK_PANED(vpanedTrainl), textViewTrain, TRUE, FALSE);
       gtk_paned_pack1(GTK_PANED(hpanedTrain), vpanedTrainl, FALSE, FALSE);
-      gtk_paned_pack2(GTK_PANED(hpanedTrain), imageTrain, TRUE, FALSE);
+      gtk_paned_pack2(GTK_PANED(hpanedTrain), imageTrain, FALSE, TRUE);
      gtk_notebook_append_page(notebook, hpanedTrain, gtk_label_new("Train"));
     gtk_container_add(MainWindow, notebook);
 
